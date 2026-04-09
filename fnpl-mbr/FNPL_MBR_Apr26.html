@@ -1068,6 +1068,8 @@ function renderSlide12(DATA, MOB_CAP){
     '<span class="leg-item"><span class="leg-dot" style="background:'+map[om]+'"></span>'+vLabel(om)+'</span>'
   ).join('');
 
+  void document.getElementById('slide12').offsetHeight;
+
   VG_ORDER.forEach(function(vg,idx){
     const sub = filtered.filter(r=>r.vg===vg);
     const vints = [...new Set(sub.map(r=>r.om))].sort();
@@ -1092,13 +1094,20 @@ function renderSlide12(DATA, MOB_CAP){
       };
     });
 
+    var chartEl = document.getElementById('c12_'+idx);
+    var rect = chartEl.getBoundingClientRect();
+    var plotW = Math.max(200, rect.width);
+    var plotH = Math.max(160, rect.height);
+
     Plotly.newPlot('c12_'+idx, traces, {
+      width: plotW,
+      height: plotH,
       xaxis:{categoryorder:'array',categoryarray:MOBS,tickfont:{size:9,family:'Inter'},title:{text:'Month on Books',font:{size:9,family:'Inter'}}},
       yaxis:{ticksuffix:'%',rangemode:'tozero',tickfont:{size:9,family:'Inter'},title:{text:'DPD 30+ Rate',font:{size:9,family:'Inter'},standoff:8}},
       margin:{l:46,r:30,t:6,b:34},
       paper_bgcolor:'transparent',plot_bgcolor:'transparent',
       font:{family:'Inter'}
-    },{responsive:true,displayModeBar:false});
+    },{responsive:false,displayModeBar:false});
   });
 }
 
