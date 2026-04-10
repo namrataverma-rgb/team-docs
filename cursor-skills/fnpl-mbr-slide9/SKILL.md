@@ -62,23 +62,116 @@ Each template's CSS is **scoped under its slide container ID** (e.g., `#slide9 .
 - Element IDs are unique per slide (e.g., `legend12` vs `legend13`, not `legend` for both)
 - NEVER flatten, merge, or deduplicate CSS rules across slides — the scoping MUST remain
 
-### Combined HTML Assembly Procedure (Step 5)
+### Combined HTML Assembly Procedure (Step 5) — Slide Presenter Format
+
+The output is a **full-screen slide presenter** (one slide visible at a time, left/right navigation) — NOT a vertical scroll of stacked cards.
 
 ```
 1. Create outer HTML shell:
-   - <head> with shared font @import (Inter + Poppins), shared body/reset CSS
-   - NO slide-specific CSS in the shared section
-2. For EACH slide (in slide order):
+   - <head> with shared font @import (Inter + Poppins)
+   - Presenter CSS (see below) — dark background, centered 1280×720 slide-track,
+     absolute-positioned slides with opacity transitions, nav arrows, dot indicators
+   - NO slide-specific CSS in the presenter section
+   - Slide-specific CSS from each template appended separately (ID-scoped, safe to combine)
+
+2. Build <body> structure:
+   <div class="presenter">
+     <button class="nav-btn prev">‹</button>
+     <div class="slide-track">
+       <!-- all slides go here as siblings, absolutely positioned -->
+     </div>
+     <button class="nav-btn next">›</button>
+     <div class="bottom-bar">
+       <div class="slide-dots"><!-- one .dot per slide --></div>
+       <span class="slide-counter">1 / N</span>
+     </div>
+   </div>
+
+3. For EACH slide (in slide order):
    a. Read the template file
-   b. Extract its <style> block → append to combined <style> (CSS is ID-scoped, safe to combine)
-   c. Extract the <div class="slide" id="slideN"> → wrap in a slide container, append to <body>
+   b. Extract its <style> block → append to combined <style>
+   c. Extract the <div class="slide" id="slideN"> → append inside .slide-track
    d. Extract its <script> block → wrap in an IIFE or append to combined <script>
-   e. Replace all {{PLACEHOLDER}} tokens with computed values — including **`{{CUTOFF_DATE}}`** in every inlined query fragment so `app_date`, AIG bounds, and `date_sub` servicing dates match Step 0 Question **2**
-3. Static slides (1, 2, 3, 4, 5) use their Reference HTML from this SKILL.md directly (inline styles, no class conflicts)
-4. NEVER regenerate CSS from the design descriptions — ONLY use template files
+   e. Replace all {{PLACEHOLDER}} tokens with computed values
+
+4. After all slides, append the presenter JavaScript (keyboard, touch swipe, dot nav)
+
+5. Static slides (1, 2, 3, 4, 5) use their Reference HTML from this SKILL.md directly
+
+6. NEVER regenerate CSS from the design descriptions — ONLY use template files
 ```
 
 **If you find yourself writing CSS properties like `flex`, `grid`, `padding`, `margin`, `font-size` etc. for a data slide — STOP. You are violating this rule. Go read the template file instead.**
+
+#### Presenter CSS (mandatory — embed in `<style>`)
+
+```css
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #0F172A;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  user-select: none;
+}
+.presenter {
+  position: relative;
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.slide-track {
+  position: relative;
+  width: 1280px; height: 720px; flex-shrink: 0;
+}
+.slide, .slide-fixed {
+  position: absolute; top: 0; left: 0;
+  width: 1280px; height: 720px;
+  background: #fff; border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  overflow: hidden;
+  opacity: 0; pointer-events: none;
+  transform: translateX(80px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.slide.active, .slide-fixed.active {
+  opacity: 1; pointer-events: auto;
+  transform: translateX(0); z-index: 2;
+}
+.slide.exit-left, .slide-fixed.exit-left {
+  opacity: 0; transform: translateX(-80px);
+}
+.nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(255,255,255,0.12); color: #fff; font-size: 22px;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+  transition: background 0.2s, transform 0.15s; z-index: 10;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.25); }
+.nav-btn.prev { left: max(12px, calc(50% - 680px)); }
+.nav-btn.next { right: max(12px, calc(50% - 680px)); }
+.nav-btn:disabled { opacity: 0.2; cursor: default; pointer-events: none; }
+.bottom-bar {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 12px; z-index: 10;
+}
+.slide-dots { display: flex; gap: 6px; }
+.dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.25); cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.dot.active { background: #fff; transform: scale(1.3); }
+.slide-counter {
+  font-size: 12px; color: rgba(255,255,255,0.5);
+  font-weight: 600; letter-spacing: 1px;
+}
+```
+
+#### Presenter JavaScript (mandatory — append after all slide scripts)
+
+Handles: arrow key navigation (Left/Right), Space (next), Home/End, touch swipe (threshold 50px), dot clicks, prev/next button clicks. Initializes slide 0 as `.active`. See build script for canonical implementation.
 
 ---
 
@@ -1330,11 +1423,11 @@ Before considering the combined file final, run the verifier bundled with this s
 
 It checks Slide 9 chart/table wiring (`#chart9`, metric column alignment), Slide 12/13 **template markers** (layout + Plotly fixes from [template-slide12.html](template-slide12.html) / [template-slide13.html](template-slide13.html)), and that **`SLIDE12_DATA` embeds `tl` on every row** (required for hovers and panel titles — see [queries-slide12.md](queries-slide12.md) `DATA_JSON` section). Exit code **0** = pass; non-zero lists failures. Agents should run this after every build; fix failures by re-reading templates and data contracts, not by patching the combined file ad hoc.
 
-The file contains all slides stacked vertically in this order:
+The file is a **full-screen slide presenter** containing all slides in this order:
 
 **Cover → Agenda → Exec Summary → Agenda (FNPL) → [GA 2.0 if Apr 2026] → Slide 9 → Slide 10 → Slide 11 → Slide 12 → Slide 13**
 
-with label dividers between them. Each slide is a 1280×720 card on a gray background. The cover slide uses a dark navy background; all other slides use white. No screenshots needed — the HTML itself is the deliverable. The `intuit-ecosystem-white.svg` file must be in the same directory as the HTML for the cover logo to render. The Agenda slide's product order is dynamic based on user selection at Step 0 (Question 3). The Exec Summary slide's content is dynamic based on Slack inputs collected at Step 3C. Slide 4 (Agenda FNPL) highlights FNPL as the active section. Slide 5 (GA 2.0) is **only included for April 2026 MBR** — skip it for all other months.
+Only one slide is visible at a time. Navigation: left/right arrow buttons, keyboard (Arrow keys, Space, Home/End), touch swipe, and clickable dot indicators at the bottom. Dark navy background (`#0F172A`) with the active slide centered at 1280×720 with an elevated shadow. Smooth fade + translate transitions between slides. The cover slide uses a dark navy internal background; all other slides use white. No screenshots needed — the HTML itself is the deliverable. The `intuit-ecosystem-white.svg` file must be in the same directory as the HTML for the cover logo to render. The Agenda slide's product order is dynamic based on user selection at Step 0 (Question 3). The Exec Summary slide's content is dynamic based on Slack inputs collected at Step 3C. Slide 4 (Agenda FNPL) highlights FNPL as the active section. Slide 5 (GA 2.0) is **only included for April 2026 MBR** — skip it for all other months.
 
 ### Interactive deck viewer: slide feel, Add Slide, Export HTML
 
@@ -1342,8 +1435,10 @@ Teams may host the combined MBR file with a **browser-based deck shell** (for ex
 
 #### Presentation-style layout (“slide feel”)
 
-- The **combined HTML shell** (outer `<head>` / body styles from the build) uses a **gray page background** and stacks each slide as a **centered 1280×720 card** with **shadow** and **vertical spacing** (e.g. `.slide` / `.slide-fixed` with `margin: 0 auto 32px`, `box-shadow`, fixed width/height). This makes scrolling feel like a **vertical deck**, not one long unbroken page.
-- **Slide templates** in this skill already assume **1280×720**; the shell only adds **page-level** chrome. Do **not** remove slide shadows or fixed dimensions when merging CSS unless the user explicitly changes the design system.
+- The **combined HTML shell** uses a **full-screen slide presenter** with a dark navy background (`#0F172A`). Each slide is **absolutely positioned** inside a `.slide-track` container (1280×720). Only the `.active` slide is visible (opacity 1, translateX 0); all others are hidden (opacity 0, shifted right). Transitions use `opacity 0.4s` + `transform 0.4s` for smooth left/right sliding.
+- **Navigation**: left/right arrow buttons (`.nav-btn`), keyboard (ArrowLeft/Right, Space, Home/End), touch swipe (50px threshold), and clickable dot indicators (`.slide-dots`) with a slide counter (`1 / N`).
+- **Slide templates** in this skill already assume **1280×720**; the presenter shell only adds **page-level chrome** (nav, dots, transitions). Do **not** remove slide shadows or fixed dimensions when merging CSS unless the user explicitly changes the design system.
+- **Scaling**: On screens smaller than 1360×780, the `.presenter` container scales down proportionally via CSS `transform: scale(…)` so slides remain legible on laptops.
 
 #### Toolbar — Add Slide (“Add New Slide” modal)
 
