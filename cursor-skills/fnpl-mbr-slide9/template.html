@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FNPL MBR — Slide 9 — {{MBR_MONTH}}</title>
+<script src="https://cdn.plot.ly/plotly-2.35.0.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #94A3B8;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* === ALL CSS SCOPED UNDER #slide9 — DO NOT REMOVE ID PREFIX === */
+  #slide9 {
+    width: 1280px; height: 720px;
+    background: #FFFFFF;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    padding: 0 40px;
+  }
+
+  #slide9 .accent { height: 4px; margin: 0 -40px; background: linear-gradient(90deg, #1D4E89, #19A0AA, #F0C929, #E07B39, #C44536); flex-shrink: 0; }
+
+  #slide9 .hdr-section {
+    background: #F8FAFC; margin: 0 -40px; padding: 16px 40px 12px;
+    flex-shrink: 0; border-bottom: 1px solid #EEF0F4;
+  }
+  #slide9 .hdr {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
+  #slide9 .hdr-left { display: flex; align-items: center; gap: 14px; }
+  #slide9 .hdr-bar { width: 5px; height: 42px; border-radius: 2px; background: #1D4E89; flex-shrink: 0; }
+  #slide9 .hdr-left h1 { font-size: 24px; font-weight: 800; color: #0F172A; letter-spacing: -0.3px; }
+  #slide9 .hdr-left .sub { font-size: 11.5px; color: #94A3B8; margin-top: 2px; }
+  #slide9 .badge { border: 1.5px solid #E2E8F0; border-radius: 7px; padding: 5px 16px; text-align: center; }
+  #slide9 .badge .bl { font-size: 8px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+  #slide9 .badge .bv { font-size: 16px; font-weight: 700; color: #0F172A; }
+
+  #slide9 .kpis { display: flex; gap: 9px; padding: 10px 0 0; flex-shrink: 0; }
+  #slide9 .kp {
+    flex: 1; border: 1px solid #EEF0F4; border-radius: 9px;
+    padding: 8px 9px; text-align: center; background: #FAFBFC;
+  }
+  #slide9 .kp .kl { font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.7px; color: #64748B; font-weight: 700; }
+  #slide9 .kp .kv { font-size: 21px; font-weight: 700; color: #0F172A; margin-top: 2px; line-height: 1; }
+  #slide9 .kp .kv .u { font-size: 13px; color: #94A3B8; font-weight: 500; }
+  #slide9 .kp .kd { font-size: 8.5px; font-weight: 700; color: #059669; margin-top: 3px; }
+  #slide9 .kp .kn { font-size: 8.5px; color: #94A3B8; margin-top: 3px; }
+
+  #slide9 .ct {
+    font-size: 13px; font-weight: 700; color: #0F172A;
+    text-align: center; letter-spacing: 1.2px; text-transform: uppercase;
+    flex-shrink: 0; padding-bottom: 2px;
+  }
+
+  #slide9 .viz-wrap {
+    flex: 1; display: flex; flex-direction: column; min-height: 0;
+    margin: 0 40px;
+  }
+
+  #slide9 .chart-area { flex: 1; min-height: 0; margin-bottom: 10px; }
+  #slide9 #chart9 { width: 100%; height: 100%; min-height: 200px; }
+
+  #slide9 .tbl-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #E2E8F0;
+    flex-shrink: 0;
+  }
+
+  #slide9 .tbl {
+    width: 100%; border-collapse: collapse;
+    font-size: 10px; table-layout: fixed;
+  }
+  #slide9 .tbl col.lc { width: 82px; }
+  #slide9 .tbl col.rc { width: 50px; }
+
+  #slide9 .tbl thead th {
+    background: #0F172A; color: #F1F5F9; font-weight: 600;
+    padding: 6px 6px; text-align: center; font-size: 9px;
+    letter-spacing: 0.4px;
+  }
+  #slide9 .tbl thead th:first-child { text-align: left; padding-left: 12px; }
+
+  #slide9 .tbl tbody td {
+    padding: 5px 6px; text-align: center; color: #334155;
+    font-weight: 500; font-variant-numeric: tabular-nums; font-size: 10px;
+    border-bottom: 1px solid #F1F5F9; background: #fff;
+  }
+  #slide9 .tbl tbody td:first-child {
+    text-align: left; padding-left: 12px;
+    font-weight: 700; color: #1E293B; font-size: 9px;
+  }
+  #slide9 .tbl tbody td.d { color: #CBD5E1; }
+  #slide9 .tbl tbody td.hi {
+    font-weight: 800; color: #0F172A;
+    background: #EFF6FF;
+  }
+  #slide9 .tbl tbody tr:nth-child(even) td { background: #FAFBFC; }
+  #slide9 .tbl tbody tr:nth-child(even) td.hi { background: #E8F1FD; }
+  #slide9 .tbl tbody tr:last-child td { border-bottom: none; }
+
+  #slide9 .foot {
+    padding: 8px 0 10px; display: flex;
+    justify-content: space-between; align-items: center; flex-shrink: 0;
+  }
+  #slide9 .foot-l { font-size: 7.5px; color: #CBD5E1; line-height: 1.6; }
+  #slide9 .foot-r { font-size: 10px; font-weight: 800; color: #E2E8F0; }
+</style>
+</head>
+<body>
+
+<div class="slide" id="slide9">
+  <div class="accent"></div>
+
+  <div class="hdr-section">
+    <div class="hdr">
+      <div class="hdr-left">
+        <div class="hdr-bar"></div>
+        <div>
+          <h1>FNPL Application Profile</h1>
+          <div class="sub">Monthly volume &middot; Vantage distribution &middot; Contingent approval rate</div>
+        </div>
+      </div>
+      <div class="badge">
+        <div class="bl">MBR Report</div>
+        <div class="bv">{{MBR_MONTH}}</div>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kp"><div class="kl">Total Apps ({{LATEST_MONTH_LABEL}})</div><div class="kv">{{KPI_TOTAL_APPS}}</div><div class="kd">{{KPI_APPS_DELTA}}</div></div>
+      <div class="kp"><div class="kl">Approval Rate</div><div class="kv">{{KPI_APPROVAL_RATE}}<span class="u">%</span></div><div class="kn">{{KPI_APPROVAL_DELTA}}</div></div>
+      <div class="kp"><div class="kl">Avg Vantage</div><div class="kv">{{KPI_AVG_VANTAGE}}</div><div class="kd">{{KPI_VANTAGE_DELTA}}</div></div>
+      <div class="kp"><div class="kl">Median Income</div><div class="kv">${{KPI_MEDIAN_INCOME}}<span class="u">K</span></div><div class="kd">{{KPI_INCOME_DELTA}}</div></div>
+      <div class="kp"><div class="kl">Super Prime Share</div><div class="kv">{{KPI_SUPER_PRIME}}<span class="u">%</span></div><div class="kn">{{KPI_PRIME_DELTA}}</div></div>
+    </div>
+  </div>
+  <div class="ct">Vantage Score Distribution &amp; Contingent Approval Rate</div>
+
+  <div class="viz-wrap">
+    <div class="chart-area">
+      <div id="chart9"></div>
+    </div>
+
+    <div class="tbl-wrap">
+    <table class="tbl">
+      {{TABLE_COLGROUP}}
+      <thead><tr>
+        <th>Metric</th>
+        {{TABLE_HEADERS}}
+      </tr></thead>
+      <tbody>
+        {{TABLE_ROWS}}
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="foot-l">
+      Data as of {{DATA_DATE}} &middot; Source: {{SOURCE_TABLE}} (app_number2=1, offer_pending filtered)<br>
+      Bands: Super Prime &ge;780 &middot; Prime 660&ndash;779 &middot; Near Prime 600&ndash;659 &middot; Subprime &lt;600
+    </div>
+    <div class="foot-r">9</div>
+  </div>
+</div>
+
+<script>
+(function(){
+const M = {{MONTHS_JSON}};
+const B = {{BARS_JSON}};
+
+const T = M.map(function(_,i){ return B.reduce(function(s,b){ return s+b.v[i]; }, 0); });
+const traces = B.map(function(b){
+  return {
+    name:b.n, x:M, type:'bar',
+    y: b.v.map(function(v,i){ return T[i]>0 ? v/T[i]*100 : 0; }),
+    marker:{ color:b.c },
+    hovertemplate:'%{x}: %{y:.1f}%<extra>'+b.n+'</extra>',
+  };
+});
+
+const aY = {{APPROVAL_JSON}};
+
+traces.push({
+  name:'Approval Rate', x:M, yaxis:'y2', type:'scatter',
+  y:aY, mode:'lines+markers+text',
+  line:{ color:'#0F172A', width:2.5, shape:'linear', dash:'dot' },
+  marker:{ size:8, color:'#F8FAFC', symbol:'circle', line:{ color:'#0F172A', width:2.5 } },
+  text:aY.map(function(v){ return v!==null ? v.toFixed(0)+'%' : ''; }),
+  textposition:'top center',
+  textfont:{ size:12, color:'#0F172A', family:'Inter, sans-serif' },
+  connectgaps:false,
+});
+
+Plotly.newPlot('chart9', traces, {
+  barmode:'stack', bargap:0.32,
+  plot_bgcolor:'#fff', paper_bgcolor:'#fff',
+  font:{ family:'Inter, sans-serif', size:10, color:'#94A3B8' },
+  margin:{ l:82, r:50, t:4, b:0 },
+  legend:{
+    orientation:'h', y:1.06, x:0.5, xanchor:'center',
+    font:{ size:8.5, color:'#64748B', family:'Inter, sans-serif' },
+    bgcolor:'rgba(0,0,0,0)', traceorder:'normal', itemwidth:28,
+  },
+  xaxis:{ showticklabels:false, showline:false, showgrid:false, zeroline:false },
+  yaxis:{
+    title:{ text:'Vantage Distribution %', font:{ size:9, color:'#64748B' }, standoff:6 },
+    range:[0,110], ticksuffix:'%', tickvals:[0,25,50,75,100],
+    gridcolor:'#F1F5F9', gridwidth:1,
+    zeroline:false, showline:true, linecolor:'#E2E8F0', linewidth:1,
+    tickfont:{ size:9, color:'#94A3B8' },
+  },
+  yaxis2:{
+    title:{ text:'Approval Rate %', font:{ size:9, color:'#64748B' }, standoff:6 },
+    range:[0,110], overlaying:'y', side:'right',
+    ticksuffix:'%', tickvals:[0,25,50,75,100],
+    showticklabels:true, showgrid:false,
+    showline:true, linecolor:'#E2E8F0', linewidth:1,
+    tickfont:{ size:9, color:'#94A3B8' },
+  },
+},{ responsive:false, displayModeBar:false });
+})();
+</script>
+</body>
+</html>

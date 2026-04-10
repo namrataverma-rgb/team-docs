@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FNPL MBR — Slide 13 — {{MBR_MONTH}}</title>
+<script src="https://cdn.plot.ly/plotly-2.35.0.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #94A3B8;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* === ALL CSS SCOPED UNDER #slide13 — DO NOT REMOVE ID PREFIX === */
+  #slide13 {
+    width: 1280px; height: 720px;
+    background: #FFFFFF;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    padding: 0 40px;
+  }
+
+  #slide13 .accent { height: 4px; margin: 0 -40px; background: linear-gradient(90deg, #1D4E89, #19A0AA, #F0C929, #E07B39, #C44536); flex-shrink: 0; }
+
+  #slide13 .hdr-section {
+    background: #F8FAFC; margin: 0 -40px; padding: 14px 40px 10px;
+    flex-shrink: 0; border-bottom: 1px solid #EEF0F4;
+  }
+  #slide13 .hdr { display: flex; justify-content: space-between; align-items: center; }
+  #slide13 .hdr-left { display: flex; align-items: center; gap: 14px; }
+  #slide13 .hdr-bar { width: 5px; height: 38px; border-radius: 2px; background: #1D4E89; flex-shrink: 0; }
+  #slide13 .hdr-left h1 { font-size: 22px; font-weight: 800; color: #0F172A; letter-spacing: -0.3px; }
+  #slide13 .hdr-left .sub { font-size: 11px; color: #94A3B8; margin-top: 1px; }
+  #slide13 .badge { border: 1.5px solid #E2E8F0; border-radius: 7px; padding: 4px 14px; text-align: center; }
+  #slide13 .badge .bl { font-size: 8px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+  #slide13 .badge .bv { font-size: 15px; font-weight: 700; color: #0F172A; }
+
+  #slide13 .vintage-body {
+    flex: 1; display: flex; flex-direction: column;
+    min-height: 0; padding: 6px 0 0;
+  }
+
+  #slide13 .shared-legend {
+    display: flex; justify-content: center; gap: 14px;
+    flex-wrap: wrap; padding: 2px 0 4px; flex-shrink: 0;
+  }
+  #slide13 .leg-item { display: inline-flex; align-items: center; font-size: 10px; color: #334155; font-weight: 500; }
+  #slide13 .leg-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; flex-shrink: 0; }
+
+  #slide13 .chart-row {
+    flex: 1; display: flex; gap: 14px;
+    align-items: stretch; min-height: 0;
+  }
+  #slide13 .chart-box {
+    flex: 1 1 0; min-width: 0; overflow: hidden;
+    border: 1px solid #E8ECF0; border-radius: 8px;
+    padding: 6px 8px 4px; background: #FAFBFC;
+    display: flex; flex-direction: column;
+  }
+  #slide13 .chart-title {
+    font-size: 11px; font-weight: 700; color: #0F172A;
+    text-transform: uppercase; text-align: center; letter-spacing: 0.3px;
+    flex-shrink: 0; margin-bottom: 1px;
+  }
+  #slide13 .chart-div { height: 340px; flex-shrink: 0; }
+
+  #slide13 .vtbl {
+    width: 100%; border-collapse: collapse; margin-top: 4px;
+    font-size: 9.5px; flex-shrink: 0;
+  }
+  #slide13 .vtbl th {
+    background: #0F172A; color: #F1F5F9;
+    padding: 3px 6px; text-align: center; font-weight: 600;
+    white-space: nowrap;
+  }
+  #slide13 .vtbl td {
+    padding: 2.5px 5px; text-align: center;
+    border-bottom: 1px solid #E8ECF0;
+  }
+  #slide13 .vtbl td:first-child {
+    text-align: left; font-weight: 600; color: #334155;
+    background: #F1F5F9; white-space: nowrap;
+  }
+  #slide13 .vtbl tr:nth-child(even) td { background: #F8FAFC; }
+  #slide13 .vtbl tr:nth-child(even) td:first-child { background: #EDF0F4; }
+
+  #slide13 .foot {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 0 8px; flex-shrink: 0;
+    font-size: 9px; color: #94A3B8;
+  }
+  #slide13 .foot-tag {
+    border: 1px solid #E2E8F0; border-radius: 4px;
+    padding: 2px 8px; font-weight: 600; color: #64748B;
+  }
+</style>
+</head>
+<body>
+<div class="slide" id="slide13">
+  <div class="accent"></div>
+  <div class="hdr-section">
+    <div class="hdr">
+      <div class="hdr-left">
+        <div class="hdr-bar"></div>
+        <div>
+          <h1>DPD30+ by Vintage &amp; Term</h1>
+          <div class="sub">{{TERMS_SUBTITLE}}</div>
+        </div>
+      </div>
+      <div class="badge">
+        <div class="bl">MBR Report</div>
+        <div class="bv">{{MBR_MONTH}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vintage-body">
+    <div class="shared-legend" id="legend13"></div>
+    <div class="chart-row" id="chartRow13"></div>
+  </div>
+
+  <div class="foot">
+    <span>Source: {{BASE_TABLE}} ⟶ loan_origination ⟶ loan_repayment_daily (DoB snapshots: day 1 + every 30d)</span>
+    <span class="foot-tag">FNPL Risk</span>
+  </div>
+</div>
+
+<script>
+(function(){
+const PALETTE = ['#1D4E89','#19A0AA','#E07B39','#C44536','#F0C929','#7C3AED','#475569','#0E7490','#B45309'];
+const MO = {1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'May',6:'Jun',7:'Jul',8:'Aug',9:'Sep',10:'Oct',11:'Nov',12:'Dec'};
+const TERM_LABEL = {'3':'3-Month Term','6':'6-Month Term','9':'9-Month Term','12':'12-Month Term'};
+
+function vLabel(om){ const d=new Date(om+'T00:00:00'); return MO[d.getMonth()+1]+'-'+String(d.getFullYear()).slice(2); }
+function mobN(m){ return parseInt(m.replace('M','')); }
+function allMobs(cap){ const a=[]; for(let i=0;i<=cap;i++) a.push('M'+i); return a; }
+function fmt(n){ return n>=1000 ? n.toLocaleString() : String(n); }
+
+/** Vintages that appear in cohort summary tables — keeps legend aligned with table columns (no orphan legend like Jan-26 when only one term had it in raw DPD). */
+function cohortVintageMonths(COHORT, TERMS){
+  var seen = {};
+  COHORT.forEach(function(c){
+    if (TERMS.indexOf(String(c.t)) >= 0) seen[c.om] = true;
+  });
+  return Object.keys(seen).sort();
+}
+
+/** Align every series to full M0..M(MOB_CAP). Use numeric x (0..cap) + ticktext labels so Plotly does not thin or mis-order category ticks on narrow panels (esp. 3-month). */
+function padSeriesToMobs(pts, MOB_CAP){
+  var MOBS = allMobs(MOB_CAP);
+  var byM = {};
+  pts.forEach(function(p){ byM[p.mob] = p; });
+  var x = [];
+  for (var i = 0; i <= MOB_CAP; i++) x.push(i);
+  var y = MOBS.map(function(m){
+    var p = byM[m];
+    return p ? +(p.r * 100).toFixed(2) : null;
+  });
+  var text = MOBS.map(function(m){
+    var p = byM[m];
+    return p && p.r > 0 ? (p.r * 100).toFixed(1) + '%' : '';
+  });
+  var customdata = MOBS.map(function(m){ return [m]; });
+  return { x: x, y: y, text: text, customdata: customdata };
+}
+
+function renderSlide13(DPD_DATA, COHORT, MOB_CAP, TERMS){
+  const filtered = DPD_DATA.filter(r=> mobN(r.mob)<=MOB_CAP);
+  const oms = cohortVintageMonths(COHORT, TERMS);
+  const map = {};
+  oms.forEach(function(om, i){ map[om] = PALETTE[i % PALETTE.length]; });
+  const MOBS = allMobs(MOB_CAP);
+
+  document.getElementById('legend13').innerHTML = oms.map(function(om){
+    return '<span class="leg-item"><span class="leg-dot" style="background:'+map[om]+'"></span>'+vLabel(om)+'</span>';
+  }).join('');
+
+  var row = document.getElementById('chartRow13');
+
+  /** Plot after every chart-box exists so flex gives each panel ~half width; plotting the first panel
+   *  while only one child exists measured ~full row width and clipped M3+ under overflow:hidden. */
+  var plotJobs = [];
+
+  TERMS.forEach(function(term){
+    var box = document.createElement('div');
+    box.className = 'chart-box';
+
+    var title = document.createElement('div');
+    title.className = 'chart-title';
+    title.textContent = TERM_LABEL[term] || (term+'-Month Term');
+    box.appendChild(title);
+
+    var chartDiv = document.createElement('div');
+    chartDiv.className = 'chart-div';
+    chartDiv.id = 'c13_'+term;
+    box.appendChild(chartDiv);
+
+    var cRows = COHORT.filter(function(r){ return String(r.t) === String(term); }).sort(function(a,b){ return a.om.localeCompare(b.om); });
+    if(cRows.length){
+      var tbl = document.createElement('table');
+      tbl.className = 'vtbl';
+      var hdr = '<tr><th></th>'+cRows.map(r=>'<th>'+vLabel(r.om)+'</th>').join('')+'</tr>';
+      var r1 = '<tr><td># Loans</td>'+cRows.map(r=>'<td>'+fmt(r.n)+'</td>').join('')+'</tr>';
+      var r2 = '<tr><td>Avg Vantage</td>'+cRows.map(r=>'<td>'+r.v+'</td>').join('')+'</tr>';
+      var r3 = '<tr><td>Med. Income</td>'+cRows.map(r=>'<td>$'+r.mi+'K</td>').join('')+'</tr>';
+      tbl.innerHTML = hdr+r1+r2+r3;
+      box.appendChild(tbl);
+    }
+
+    row.appendChild(box);
+
+    var sub = filtered.filter(function(r){ return String(r.t) === String(term); });
+    var yMax = 0;
+    sub.forEach(function(r){ yMax = Math.max(yMax, r.r * 100); });
+    // Per-term y-scale. 3-mo DPD30+ is often 0% until M3+ so a wide 0–10% axis looks "empty";
+    // cap the ceiling tighter (max ~10%) so non-zero rates use more vertical space.
+    var yTop;
+    if (yMax <= 0) {
+      yTop = 5;
+    } else if (String(term) === '3') {
+      yTop = Math.min(10, Math.max(yMax * 1.48 + 1.05, 4));
+    } else {
+      yTop = Math.min(100, yMax * 1.32 + 0.65);
+    }
+
+    var yDtick = (yTop <= 8) ? 1 : 2;
+
+    var traces = oms.map(function(om){
+      var pts = sub.filter(function(r){ return r.om === om; }).sort(function(a,b){ return mobN(a.mob) - mobN(b.mob); });
+      if (!pts.length) return null;
+      var pad = padSeriesToMobs(pts, MOB_CAP);
+      return {
+        x: pad.x,
+        y: pad.y,
+        customdata: pad.customdata,
+        mode:'lines+markers+text',
+        connectgaps:false,
+        line:{shape:'spline',smoothing:1.22,width:2.5,color:map[om]},
+        marker:{size:5,color:map[om]},
+        text: pad.text,
+        textposition:'top center',
+        textfont:{size:8.5,color:map[om],family:'Inter'},
+        showlegend:false,
+        hovertemplate:'%{customdata[0]}: %{y:.2f}%<extra>'+vLabel(om)+'</extra>'
+      };
+    }).filter(Boolean);
+
+    var tickPos = [];
+    for (var ti = 0; ti <= MOB_CAP; ti++) tickPos.push(ti);
+    plotJobs.push({ term: term, traces: traces, yTop: yTop, yDtick: yDtick, tickPos: tickPos });
+  });
+
+  void row.offsetHeight;
+  plotJobs.forEach(function(job){
+    var chartDiv = document.getElementById('c13_'+job.term);
+    var plotW = Math.max(260, chartDiv.getBoundingClientRect().width);
+    Plotly.newPlot('c13_'+job.term, job.traces, {
+      width: plotW,
+      xaxis:{
+        type:'linear',
+        tickmode:'array',
+        tickvals:job.tickPos,
+        ticktext:MOBS,
+        range:[-0.35, MOB_CAP + 0.35],
+        fixedrange:true,
+        tickfont:{size:9,family:'Inter'},
+        title:{text:'Month on Books',font:{size:9,family:'Inter'}},
+        automargin:true,
+        zeroline:false
+      },
+      yaxis:{ticksuffix:'%',range:[0,job.yTop],dtick:job.yDtick,tickfont:{size:9,family:'Inter'},title:{text:'DPD 30+ Rate',font:{size:9,family:'Inter'}},zeroline:true,zerolinewidth:1,zerolinecolor:'#E2E8F0'},
+      margin:{l:46,r:10,t:6,b:36},
+      height:300,
+      paper_bgcolor:'transparent',plot_bgcolor:'transparent',
+      font:{family:'Inter'}
+    },{responsive:false,displayModeBar:false});
+  });
+}
+
+/* ── DATA (agent replaces at build time) ── */
+var SLIDE13_DPD = {{DPD_DATA_JSON}};
+var SLIDE13_COHORT = {{COHORT_DATA_JSON}};
+var SLIDE13_MOB_CAP = {{MOB_CAP}};
+var SLIDE13_TERMS = {{TERMS_JSON}};
+renderSlide13(SLIDE13_DPD, SLIDE13_COHORT, SLIDE13_MOB_CAP, SLIDE13_TERMS);
+})();
+</script>
+</body>
+</html>

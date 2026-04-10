@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FNPL MBR — Slide 10 — {{MBR_MONTH}}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #94A3B8;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* === ALL CSS SCOPED UNDER #slide10 — DO NOT REMOVE ID PREFIX === */
+  #slide10 {
+    width: 1280px; height: 720px;
+    background: #FFFFFF;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    padding: 0 40px;
+  }
+
+  #slide10 .accent { height: 4px; margin: 0 -40px; background: linear-gradient(90deg, #1D4E89, #19A0AA, #F0C929, #E07B39, #C44536); flex-shrink: 0; }
+
+  #slide10 .hdr-section {
+    background: #F8FAFC; margin: 0 -40px; padding: 16px 40px 12px;
+    flex-shrink: 0; border-bottom: 1px solid #EEF0F4;
+  }
+  #slide10 .hdr { display: flex; justify-content: space-between; align-items: center; }
+  #slide10 .hdr-left { display: flex; align-items: center; gap: 14px; }
+  #slide10 .hdr-bar { width: 5px; height: 42px; border-radius: 2px; background: #1D4E89; flex-shrink: 0; }
+  #slide10 .hdr-left h1 { font-size: 24px; font-weight: 800; color: #0F172A; letter-spacing: -0.3px; }
+  #slide10 .hdr-left .sub { font-size: 11.5px; color: #94A3B8; margin-top: 2px; }
+  #slide10 .badge { border: 1.5px solid #E2E8F0; border-radius: 7px; padding: 5px 16px; text-align: center; }
+  #slide10 .badge .bl { font-size: 8px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+  #slide10 .badge .bv { font-size: 16px; font-weight: 700; color: #0F172A; }
+
+  #slide10 .viz-wrap {
+    flex: 1; display: flex; flex-direction: column; min-height: 0;
+    margin: 0 40px;
+    padding-top: 14px;
+  }
+
+  #slide10 .tbl-wrap {
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid #E2E8F0; flex-shrink: 0;
+  }
+
+  #slide10 .tbl {
+    width: 100%; border-collapse: collapse;
+    font-size: 10px; table-layout: fixed;
+  }
+  #slide10 .tbl col.lc { width: 82px; }
+  #slide10 .tbl col.tc { width: 50px; }
+
+  #slide10 .tbl thead th {
+    background: #0F172A; color: #F1F5F9; font-weight: 600;
+    padding: 6px 6px; text-align: center; font-size: 9px;
+    letter-spacing: 0.4px;
+  }
+  #slide10 .tbl thead th:first-child { text-align: left; padding-left: 12px; }
+  #slide10 .tbl thead th.total { background: #1E293B; font-weight: 700; font-size: 8px; }
+
+  #slide10 .tbl tbody td {
+    padding: 5px 6px; text-align: center; color: #334155;
+    font-weight: 500; font-variant-numeric: tabular-nums; font-size: 10px;
+    border-bottom: 1px solid #F1F5F9; background: #fff;
+  }
+  #slide10 .tbl tbody td:first-child {
+    text-align: left; padding-left: 12px;
+    font-weight: 700; color: #1E293B; font-size: 8.5px;
+  }
+  #slide10 .tbl tbody td.d { color: #CBD5E1; }
+  #slide10 .tbl tbody td.hi {
+    font-weight: 800; color: #0F172A;
+    background: #EFF6FF;
+  }
+  #slide10 .tbl tbody td.total-col {
+    font-weight: 700; color: #0F172A; font-size: 9px;
+    background: #F8FAFC; border-left: 2px solid #E2E8F0;
+  }
+  #slide10 .tbl tbody tr:nth-child(even) td { background: #FAFBFC; }
+  #slide10 .tbl tbody tr:nth-child(even) td.hi { background: #E8F1FD; }
+  #slide10 .tbl tbody tr:nth-child(even) td.total-col { background: #F1F5F9; }
+  #slide10 .tbl tbody tr:last-child td { border-bottom: none; }
+
+  #slide10 .commentary {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    padding: 10px 0 0; min-height: 0;
+  }
+  #slide10 .commentary .callout {
+    display: flex; gap: 10px; align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  #slide10 .commentary .num {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+    background: #1D4E89; color: #fff; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #slide10 .commentary .txt {
+    font-size: 11px; color: #334155; line-height: 1.5;
+  }
+  #slide10 .commentary .txt strong { color: #0F172A; }
+
+  #slide10 .foot {
+    padding: 8px 0 10px; display: flex;
+    justify-content: space-between; align-items: center; flex-shrink: 0;
+  }
+  #slide10 .foot-l { font-size: 7.5px; color: #CBD5E1; line-height: 1.6; }
+  #slide10 .foot-r { font-size: 10px; font-weight: 800; color: #E2E8F0; }
+</style>
+</head>
+<body>
+
+<div class="slide" id="slide10">
+  <div class="accent"></div>
+
+  <div class="hdr-section">
+    <div class="hdr">
+      <div class="hdr-left">
+        <div class="hdr-bar"></div>
+        <div>
+          <h1>FNPL Funded Loans Profile</h1>
+          <div class="sub">View as of funded month &middot; Weighted averages by loan amount</div>
+        </div>
+      </div>
+      <div class="badge">
+        <div class="bl">MBR Report</div>
+        <div class="bv">{{MBR_MONTH}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="viz-wrap">
+    <div class="tbl-wrap">
+    <table class="tbl">
+      <colgroup>
+        <col class="lc">
+        {{TABLE_MONTH_COLS}}
+        <col class="tc">
+      </colgroup>
+      <thead><tr>
+        <th>Metrics</th>
+        {{TABLE_HEADERS}}
+        <th class="total">Total</th>
+      </tr></thead>
+      <tbody>
+        {{TABLE_ROWS}}
+      </tbody>
+    </table>
+    </div>
+
+    <div class="commentary" id="commentary10"></div>
+  </div>
+
+  <div class="foot">
+    <div class="foot-l">
+      Data as of {{DATA_DATE}} &middot; Source: {{SOURCE_TABLE}} (funded_loan=1)<br>
+      Joined with intuit_lending_loanprofiles_dwh.loan_origination &middot; tax_dm.agg_auth_id_accepted_refund
+    </div>
+    <div class="foot-r">10</div>
+  </div>
+</div>
+
+<script>
+(function(){
+var D = {{COMMENTARY_DATA}};
+
+function dir(c, p) { return c > p ? 'increased' : c < p ? 'decreased' : 'remained stable'; }
+
+var bullets = [];
+
+if (D.latest && D.prior && D.latest.wa_term && D.prior.wa_term) {
+  var d = dir(D.latest.wa_term, D.prior.wa_term);
+  bullets.push(
+    '<strong>WA Term</strong> has ' + d + ' to <strong>' + D.latest.wa_term.toFixed(1) + '</strong> in ' + D.latest.label +
+    ' (from ' + D.prior.wa_term.toFixed(1) + ' in ' + D.prior.label + '), indicating customers are ' +
+    (D.latest.wa_term > D.prior.wa_term ? 'opting for longer loan terms. Based on A/B performance, longer term loans have higher risk \u2014 we will continue to closely monitor GA performance by Term.' :
+     D.latest.wa_term < D.prior.wa_term ? 'choosing shorter loan terms.' : 'maintaining similar term preferences.')
+  );
+}
+
+if (D.latest && D.total && D.latest.ck_low_risk != null) {
+  var valL = D.latest.ck_low_risk > 1 ? D.latest.ck_low_risk : Math.round(D.latest.ck_low_risk * 100);
+  var valT = D.total.ck_low_risk > 1 ? D.total.ck_low_risk : Math.round(D.total.ck_low_risk * 100);
+  bullets.push(
+    'As we see better quality applicants filing and applying for FNPL, <strong>' + valL + '%</strong> of ' +
+    D.latest.label + ' funded loans are from <strong>CK low risk</strong> placements vs ~' +
+    valT + '% overall.'
+  );
+}
+
+if (D.latest && D.prior && D.latest.loans && D.prior.loans) {
+  var chg = ((D.latest.loans - D.prior.loans) / D.prior.loans * 100).toFixed(0);
+  var d2 = D.latest.loans > D.prior.loans ? 'grew' : 'declined';
+  bullets.push(
+    'Funded loan volume ' + d2 + ' by <strong>' + Math.abs(chg) + '%</strong> ' +
+    '(' + D.latest.loans.toLocaleString() + ' loans in ' + D.latest.label +
+    ' vs ' + D.prior.loans.toLocaleString() + ' in ' + D.prior.label + ').'
+  );
+}
+
+document.getElementById('commentary10').innerHTML = bullets.map(function(b, i) {
+  return '<div class="callout"><div class="num">' + (i+1) + '</div><div class="txt">' + b + '</div></div>';
+}).join('');
+})();
+</script>
+</body>
+</html>

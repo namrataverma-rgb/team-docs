@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FNPL MBR — Slide 12 — {{MBR_MONTH}}</title>
+<script src="https://cdn.plot.ly/plotly-2.35.0.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #94A3B8;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* === ALL CSS SCOPED UNDER #slide12 — DO NOT REMOVE ID PREFIX === */
+  #slide12 {
+    width: 1280px; height: 720px;
+    background: #FFFFFF;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    padding: 0 40px;
+  }
+
+  #slide12 .accent { height: 4px; margin: 0 -40px; background: linear-gradient(90deg, #1D4E89, #19A0AA, #F0C929, #E07B39, #C44536); flex-shrink: 0; }
+
+  #slide12 .hdr-section {
+    background: #F8FAFC; margin: 0 -40px; padding: 14px 40px 10px;
+    flex-shrink: 0; border-bottom: 1px solid #EEF0F4;
+  }
+  #slide12 .hdr { display: flex; justify-content: space-between; align-items: center; }
+  #slide12 .hdr-left { display: flex; align-items: center; gap: 14px; }
+  #slide12 .hdr-bar { width: 5px; height: 38px; border-radius: 2px; background: #1D4E89; flex-shrink: 0; }
+  #slide12 .hdr-left h1 { font-size: 22px; font-weight: 800; color: #0F172A; letter-spacing: -0.3px; }
+  #slide12 .hdr-left .sub { font-size: 11px; color: #94A3B8; margin-top: 1px; }
+  #slide12 .badge { border: 1.5px solid #E2E8F0; border-radius: 7px; padding: 4px 14px; text-align: center; }
+  #slide12 .badge .bl { font-size: 8px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+  #slide12 .badge .bv { font-size: 15px; font-weight: 700; color: #0F172A; }
+
+  #slide12 .vintage-body {
+    flex: 1; display: flex; flex-direction: column;
+    min-height: 0; min-width: 0;
+    padding: 8px 0 0;
+  }
+
+  #slide12 .shared-legend {
+    display: flex; justify-content: center; gap: 16px;
+    flex-wrap: wrap; padding: 2px 0 6px; flex-shrink: 0;
+  }
+  #slide12 .leg-item { display: inline-flex; align-items: center; font-size: 10.5px; color: #334155; font-weight: 500; }
+  #slide12 .leg-dot { width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; flex-shrink: 0; }
+
+  /* 2×2 equal quadrants: explicit 1fr rows + cols so panels stay even (not content-sized rows). */
+  #slide12 .chart-grid {
+    flex: 1; display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px 14px; min-height: 0; min-width: 0;
+    align-items: stretch; justify-items: stretch;
+  }
+  #slide12 .chart-box {
+    border: 1px solid #E8ECF0; border-radius: 8px; padding: 6px 6px 4px;
+    background: #FAFBFC; display: flex; flex-direction: column;
+    min-height: 0; min-width: 0;
+    height: 100%;
+  }
+  #slide12 .chart-title {
+    font-size: 11px; font-weight: 700; color: #0F172A;
+    text-transform: uppercase; text-align: center; letter-spacing: 0.3px;
+    flex-shrink: 0; margin-bottom: 2px;
+  }
+  #slide12 .chart-div {
+    flex: 1; min-height: 0; min-width: 0;
+    width: 100%;
+  }
+
+  #slide12 .foot {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 0 8px; flex-shrink: 0;
+    font-size: 9px; color: #94A3B8;
+  }
+  #slide12 .foot-tag {
+    border: 1px solid #E2E8F0; border-radius: 4px;
+    padding: 2px 8px; font-weight: 600; color: #64748B;
+  }
+</style>
+</head>
+<body>
+<div class="slide" id="slide12">
+  <div class="accent"></div>
+  <div class="hdr-section">
+    <div class="hdr">
+      <div class="hdr-left">
+        <div class="hdr-bar"></div>
+        <div>
+          <h1>DPD30+ by Vintage &amp; Vantage Group</h1>
+          <div class="sub">Origination month cohort &middot; Constant denominator &middot; MoB checkpoint performance</div>
+        </div>
+      </div>
+      <div class="badge">
+        <div class="bl">MBR Report</div>
+        <div class="bv">{{MBR_MONTH}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vintage-body">
+    <div class="shared-legend" id="legend12"></div>
+    <div class="chart-grid">
+      <div class="chart-box">
+        <div class="chart-title" id="title12_0"></div>
+        <div class="chart-div" id="c12_0"></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title" id="title12_1"></div>
+        <div class="chart-div" id="c12_1"></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title" id="title12_2"></div>
+        <div class="chart-div" id="c12_2"></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title" id="title12_3"></div>
+        <div class="chart-div" id="c12_3"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Source: {{BASE_TABLE}} ⟶ loan_origination ⟶ loan_repayment_daily (DoB snapshots: day 1 + every 30d)</span>
+    <span class="foot-tag">FNPL Risk</span>
+  </div>
+</div>
+
+<script>
+(function(){
+const PALETTE = ['#1D4E89','#19A0AA','#E07B39','#C44536','#F0C929','#7C3AED','#475569','#0E7490','#B45309'];
+const MO = {1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'May',6:'Jun',7:'Jul',8:'Aug',9:'Sep',10:'Oct',11:'Nov',12:'Dec'};
+const VG_ORDER = ['4. Super Prime','3. Prime','2. Near Prime','1. Subprime'];
+const VG_NICE  = {'4. Super Prime':'Super Prime (≥780)','3. Prime':'Prime (660–779)','2. Near Prime':'Near Prime (600–659)','1. Subprime':'Subprime (<600)'};
+
+function vLabel(om){ const d=new Date(om+'T00:00:00'); return MO[d.getMonth()+1]+'-'+String(d.getFullYear()).slice(2); }
+function mobN(m){ return parseInt(m.replace('M','')); }
+function allMobs(cap){ const a=[]; for(let i=0;i<=cap;i++) a.push('M'+i); return a; }
+
+function buildVintageColors(rows){
+  const oms=[...new Set(rows.map(r=>r.om))].sort();
+  const map={}; oms.forEach((o,i)=>{ map[o]=PALETTE[i%PALETTE.length]; });
+  return {oms, map};
+}
+
+function renderSlide12(DATA, MOB_CAP){
+  const filtered = DATA.filter(r=> mobN(r.mob)<=MOB_CAP);
+  const {oms, map} = buildVintageColors(filtered);
+  const MOBS = allMobs(MOB_CAP);
+
+  /* Shared Y max (%) for all four panels — avoids independent autoscale (uneven ticks / bogus floors). */
+  var yMaxPct = 0;
+  filtered.forEach(function(r){
+    var v = (r.r!=null && !isNaN(r.r)) ? Number(r.r) * 100 : 0;
+    if (v > yMaxPct) yMaxPct = v;
+  });
+  var yAxisTop = Math.max(1, yMaxPct * 1.15);
+
+  document.getElementById('legend12').innerHTML = oms.map(om=>
+    '<span class="leg-item"><span class="leg-dot" style="background:'+map[om]+'"></span>'+vLabel(om)+'</span>'
+  ).join('');
+
+  /* Force flex/grid layout so .chart-div has real width/height before Plotly measures (same idea as Slide 13). */
+  void document.getElementById('slide12').offsetHeight;
+
+  VG_ORDER.forEach(function(vg,idx){
+    const sub = filtered.filter(r=>r.vg===vg);
+    document.getElementById('title12_'+idx).textContent = (idx+1)+'. '+VG_NICE[vg];
+
+    const traces = oms.map(om=>{
+      const pts = sub.filter(r=>r.om===om).sort((a,b)=>mobN(a.mob)-mobN(b.mob));
+      if(!pts.length){
+        return { x:['M0'], y:[0], mode:'lines', line:{color:map[om],width:1,dash:'dot',shape:'linear'}, showlegend:false, hoverinfo:'skip' };
+      }
+      var n0 = (pts[0].tl!=null&&pts[0].tl!==undefined)?pts[0].tl:'\u2014';
+      /* Splines with one point break Plotly (missing ticks, duplicated axes). Use linear unless two or more MoBs. */
+      var useSpline = pts.length >= 2;
+      var lineCfg = {width:2.5,color:map[om],shape: useSpline ? 'spline' : 'linear'};
+      if (useSpline) lineCfg.smoothing = 1.2;
+      return {
+        x: pts.map(p=>p.mob),
+        y: pts.map(p=>+(p.r*100).toFixed(2)),
+        mode:'lines+markers+text',
+        line: lineCfg,
+        marker:{size:6,color:map[om]},
+        text: pts.map(p=> p.r>0 ? (p.r*100).toFixed(1)+'%' : ''),
+        textposition:'top center',
+        textfont:{size:9,color:map[om],family:'Inter'},
+        showlegend:false,
+        hovertemplate:'%{x}: %{y:.2f}%<extra>'+vLabel(om)+' (n='+n0+')</extra>'
+      };
+    });
+
+    var chartEl = document.getElementById('c12_'+idx);
+    var rect = chartEl.getBoundingClientRect();
+    var plotW = Math.max(200, rect.width);
+    var plotH = Math.max(160, rect.height);
+
+    Plotly.newPlot('c12_'+idx, traces, {
+      width: plotW,
+      height: plotH,
+      xaxis:{categoryorder:'array',categoryarray:MOBS,tickfont:{size:9,family:'Inter'},title:{text:'Month on Books',font:{size:9,family:'Inter'}}},
+      yaxis:{ticksuffix:'%',range:[0,yAxisTop],tickfont:{size:9,family:'Inter'},title:{text:'DPD 30+ Rate',font:{size:9,family:'Inter'},standoff:8}},
+      margin:{l:46,r:30,t:6,b:34},
+      paper_bgcolor:'transparent',plot_bgcolor:'transparent',
+      font:{family:'Inter'}
+    },{responsive:false,displayModeBar:false});
+  });
+}
+
+/* ── DATA (agent replaces at build time) ── */
+var SLIDE12_DATA = {{DATA_JSON}};
+var SLIDE12_MOB_CAP = {{MOB_CAP}};
+renderSlide12(SLIDE12_DATA, SLIDE12_MOB_CAP);
+})();
+</script>
+</body>
+</html>
