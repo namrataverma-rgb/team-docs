@@ -71,6 +71,10 @@ After **Roll to charge-off** — **labels MUST match exactly** (do not use “Ro
 | `# Roll rate -> 30D to CO` | `rollrate_30_to_co` | `X.X%` or `—` |
 | `$ Roll rate -> 30D to CO` | `dollar_rollrate_30_to_co` | `X.X%` or `—` |
 
+**Roll rate formulas** (from [queries-slide11.md](queries-slide11.md)):
+- **Count**: `SUM(is_charged_off_asof) / SUM(30dpd_plus)` — charged-off loans as share of all 30DPD+ loans
+- **Dollar**: `SUM(CO principal) / SUM(principal_balance_asof + charge_off_principal_bal where 30dpd_plus)` — denominator includes charge-off principal so the balance base is complete
+
 After **Charge-off**:
 
 | Label | Field | Format |

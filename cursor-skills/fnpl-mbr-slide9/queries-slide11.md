@@ -123,7 +123,7 @@ SELECT
     SUM(`90dpd_plus`) / NULLIF(SUM(`90dob`), 0)  AS `90dpd_plus_rate`,
 
     /* ── roll rate: 30DPD → charge-off ── */
-    SUM(is_charged_off_asof) / NULLIF(SUM(`30dpd_plus`), 0)  AS rollrate_30_to_co,
+    SUM(is_charged_off_asof) / NULLIF(SUM(`30dpd_plus`), 0) AS rollrate_30_to_co,
 
     /* ── dollar-based delinquency rates (balance + charge-off principal / orig balance) ── */
     SUM(CASE WHEN `1dpd_plus`  = 1 AND `1dob`  = 1
@@ -146,9 +146,9 @@ SELECT
              THEN principal_balance_asof + charge_off_principal_bal ELSE 0 END)
       / NULLIF(SUM(CASE WHEN `90dob` = 1 THEN amount ELSE 0 END), 0)  AS dollar_90dpd_plus_rate,
 
-    /* ── dollar roll rate: 30DPD → charge-off ── */
+    /* ── dollar roll rate: 30DPD → charge-off (denominator includes CO principal) ── */
     SUM(CASE WHEN is_charged_off_asof = 1 THEN charge_off_principal_bal ELSE 0 END)
-      / NULLIF(SUM(CASE WHEN `30dpd_plus` = 1 THEN principal_balance_asof ELSE 0 END), 0)
+      / NULLIF(SUM(CASE WHEN `30dpd_plus` = 1 THEN principal_balance_asof + charge_off_principal_bal ELSE 0 END), 0)
                                                                         AS dollar_rollrate_30_to_co,
 
     /* ── status rates ── */
