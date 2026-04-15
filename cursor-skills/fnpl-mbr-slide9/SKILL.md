@@ -6,12 +6,14 @@ description: >-
   + DPD30+ by Vantage Group + DPD30+ by Term). Extracts data from Databricks,
   validates against prior months and AIG reference tables, creates high-resolution
   HTML slides, preserves all monthly artifacts, and (when relevant) interactive deck
-  conventions: presentation-style page layout, Add Slide modal templates, Export HTML.
+  conventions: presentation-style page layout, Edit/Present mode toggle,
+  Add Slide modal templates, Delete Slide, Save for Everyone (GitHub API commit).
   Use when the user mentions MBR, monthly business review, FNPL slide 1,
   FNPL slide 9, FNPL slide 10, FNPL slide 11, FNPL slide 12, FNPL slide 13,
   FNPL application profile, FNPL funded loans profile,
   FNPL monthly performance, DPD30+ by vantage, DPD30+ by term, Add New Slide,
-  Key Takeaway slide, Export HTML deck, or team-docs fnpl-mbr viewer.
+  Key Takeaway slide, Edit Mode, Delete Slide, Save for Everyone,
+  or team-docs fnpl-mbr viewer.
 ---
 
 # FNPL MBR — Cover + Slides 9–13 Workflow
@@ -167,11 +169,28 @@ body {
   font-size: 12px; color: rgba(255,255,255,0.5);
   font-weight: 600; letter-spacing: 1px;
 }
+/* Edit/Present mode toggle button (in bottom-bar, hidden in edit mode) */
+.mode-toggle {
+  padding: 5px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7);
+  font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+  cursor: pointer; letter-spacing: 0.3px;
+  transition: background 0.2s, color 0.2s;
+  text-transform: uppercase;
+}
+.mode-toggle:hover { background: rgba(255,255,255,0.18); color: #fff; }
+body.edit-mode .mode-toggle { display: none; }
+@media (max-width: 1360px), (max-height: 780px) {
+  .slide-track {
+    transform: scale(calc(min(100vw / 1360, 100vh / 780)));
+    transform-origin: center center;
+  }
+}
 ```
 
 #### Presenter JavaScript (mandatory — append after all slide scripts)
 
-Handles: arrow key navigation (Left/Right), Space (next), Home/End, touch swipe (threshold 50px), dot clicks, prev/next button clicks. Initializes slide 0 as `.active`. See build script for canonical implementation.
+Handles: arrow key navigation (Left/Right), Space (next), Home/End, touch swipe (threshold 50px), dot clicks, prev/next button clicks. Initializes slide 0 as `.active`. **Exposes `window.__presenter`** API with `go(idx)`, `currentIndex()`, and `refresh()` methods so Edit Mode / Add Slide / Delete Slide scripts can manipulate slides dynamically. The `refresh()` method re-queries all slides from the DOM, rebuilds dot indicators, and updates the slide counter — essential after adding or removing slides.
 
 ---
 
@@ -249,32 +268,46 @@ A static-layout slide whose **product order** changes based on user input from *
 
 ### Slide 2 — Reference HTML
 
-Replace `{{PRODUCT_ORDER}}` sub-items and `{{MBR_MONTH_LABEL}}` at build time.
+Horizontal **timeline** layout with 3 stops. Stop 1 (Executive Summary) is the **active highlight** (blue circle with glow). Replace `{{PRODUCT_ORDER}}` chips and `{{MBR_MONTH_LABEL}}` at build time.
 
 ```html
 <div class="slide slide-fixed" id="slide2" style="background:#FFFFFF;display:flex;flex-direction:column;padding:48px 56px 32px;">
-  <h1 style="font-family:'Poppins',sans-serif;font-size:36px;font-weight:700;color:#0F172A;margin:0 0 32px;">Agenda</h1>
-  <div style="display:flex;flex:1;align-items:flex-start;">
-    <div style="width:4px;background:#0F172A;border-radius:2px;align-self:stretch;margin-right:0;"></div>
-    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:32px 40px;flex:1;">
-      <div style="margin-bottom:24px;">
-        <div style="font-family:'Inter',sans-serif;font-size:18px;font-weight:600;color:#334155;margin-bottom:4px;">Executive Summary & Follow ups</div>
-        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#64748B;">10 mins</div>
+  <div style="width:100%;height:4px;background:#0F172A;border-radius:2px;margin-bottom:24px;"></div>
+  <h1 style="font-family:'Poppins',sans-serif;font-size:36px;font-weight:700;color:#0F172A;margin:0;">Agenda</h1>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+    <div style="width:100%;display:flex;align-items:flex-start;position:relative;padding:0 20px;">
+      <!-- connecting line -->
+      <div style="position:absolute;top:20px;left:calc(16.66% + 20px);right:calc(16.66% + 20px);height:3px;background:#E2E8F0;z-index:0;"></div>
+      <!-- stop 1 (active — Executive Summary highlighted) -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;">
+        <div style="width:44px;height:44px;border-radius:50%;background:#236CFF;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 0 0 6px rgba(35,108,255,0.15);">
+          <span style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:#fff;">1</span>
+        </div>
+        <div style="font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:#0F172A;margin-bottom:6px;">Executive Summary<br>&amp; Follow ups</div>
+        <div style="font-family:'Inter',sans-serif;font-size:13px;color:#94A3B8;font-weight:600;background:#F1F5F9;padding:4px 14px;border-radius:20px;margin-top:4px;">10 mins</div>
       </div>
-      <div style="margin-bottom:24px;">
-        <div style="font-family:'Inter',sans-serif;font-size:18px;font-weight:600;color:#334155;margin-bottom:8px;">Credit Portfolio review by Product</div>
-        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#64748B;margin-bottom:8px;">35 mins</div>
-        <div style="padding-left:24px;display:flex;flex-direction:column;gap:4px;">
-          <!-- {{PRODUCT_ORDER}} — replace these lines dynamically -->
-          <div style="font-family:'Inter',sans-serif;font-size:15px;color:#64748B;">— FNPL</div>
-          <div style="font-family:'Inter',sans-serif;font-size:15px;color:#64748B;">— PCA</div>
-          <div style="font-family:'Inter',sans-serif;font-size:15px;color:#64748B;">— RAD</div>
-          <div style="font-family:'Inter',sans-serif;font-size:15px;color:#64748B;">— TTFA</div>
+      <!-- stop 2 -->
+      <div style="flex:1.4;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;">
+        <div style="width:40px;height:40px;border-radius:50%;background:#0F172A;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+          <span style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:#fff;">2</span>
+        </div>
+        <div style="font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:#0F172A;margin-bottom:6px;">Credit Portfolio<br>review by Product</div>
+        <div style="font-family:'Inter',sans-serif;font-size:13px;color:#94A3B8;font-weight:600;background:#F1F5F9;padding:4px 14px;border-radius:20px;margin-bottom:12px;">35 mins</div>
+        <!-- {{PRODUCT_ORDER}} — replace these chips dynamically -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#334155;background:#E2E8F0;padding:4px 12px;border-radius:6px;">FNPL</span>
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#334155;background:#E2E8F0;padding:4px 12px;border-radius:6px;">PCA</span>
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#334155;background:#E2E8F0;padding:4px 12px;border-radius:6px;">RAD</span>
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#334155;background:#E2E8F0;padding:4px 12px;border-radius:6px;">TTFA</span>
         </div>
       </div>
-      <div>
-        <div style="font-family:'Inter',sans-serif;font-size:18px;font-weight:600;color:#334155;margin-bottom:4px;">Fraud Update</div>
-        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#64748B;">10 mins</div>
+      <!-- stop 3 -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;">
+        <div style="width:40px;height:40px;border-radius:50%;background:#0F172A;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+          <span style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:#fff;">3</span>
+        </div>
+        <div style="font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:#0F172A;margin-bottom:6px;">Fraud Update</div>
+        <div style="font-family:'Inter',sans-serif;font-size:13px;color:#94A3B8;font-weight:600;background:#F1F5F9;padding:4px 14px;border-radius:20px;margin-top:4px;">10 mins</div>
       </div>
     </div>
   </div>
@@ -297,33 +330,48 @@ This slide is a **copy of Slide 2 (Agenda)** with the currently-presenting produ
 
 ### Slide 4 — Reference HTML
 
-Same structure as Slide 2, with dimming applied to non-active items. Replace `{{MBR_MONTH_LABEL}}` at build time.
+Same timeline structure as Slide 2, with **stop 2 (Credit Portfolio)** as the active highlight and **FNPL** chip in blue. Stop 1 and Stop 3 are dimmed (`opacity:0.35`). A blue progress line connects stop 1 to stop 2. Replace `{{MBR_MONTH_LABEL}}` at build time.
 
 ```html
 <div class="slide slide-fixed" id="slide4" style="background:#FFFFFF;display:flex;flex-direction:column;padding:48px 56px 32px;">
-  <h1 style="font-family:'Poppins',sans-serif;font-size:36px;font-weight:700;color:#0F172A;margin:0 0 32px;">Agenda</h1>
-  <div style="display:flex;flex:1;align-items:flex-start;">
-    <div style="width:4px;background:#0F172A;border-radius:2px;align-self:stretch;margin-right:0;"></div>
-    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:32px 40px;flex:1;">
-      <div style="margin-bottom:24px;">
-        <div style="font-family:'Inter',sans-serif;font-size:18px;font-weight:600;color:#CBD5E1;margin-bottom:4px;">Executive Summary & Follow ups</div>
-        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#CBD5E1;">10 mins</div>
+  <div style="width:100%;height:4px;background:#0F172A;border-radius:2px;margin-bottom:24px;"></div>
+  <h1 style="font-family:'Poppins',sans-serif;font-size:36px;font-weight:700;color:#0F172A;margin:0;">Agenda</h1>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+    <div style="width:100%;display:flex;align-items:flex-start;position:relative;padding:0 20px;">
+      <!-- connecting line (gray base) -->
+      <div style="position:absolute;top:20px;left:calc(16.66% + 20px);right:calc(16.66% + 20px);height:3px;background:#E2E8F0;z-index:0;"></div>
+      <!-- progress fill to stop 2 (blue) -->
+      <div style="position:absolute;top:20px;left:calc(16.66% + 20px);width:calc(33.33%);height:3px;background:#236CFF;z-index:0;"></div>
+      <!-- stop 1 (dimmed — done) -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;opacity:0.35;">
+        <div style="width:40px;height:40px;border-radius:50%;background:#94A3B8;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+          <span style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:#fff;">1</span>
+        </div>
+        <div style="font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:#94A3B8;margin-bottom:6px;">Executive Summary<br>&amp; Follow ups</div>
+        <div style="font-family:'Inter',sans-serif;font-size:13px;color:#CBD5E1;font-weight:600;background:#F1F5F9;padding:4px 14px;border-radius:20px;margin-top:4px;">10 mins</div>
       </div>
-      <div style="margin-bottom:24px;">
-        <div style="font-family:'Inter',sans-serif;font-size:18px;font-weight:600;color:#334155;margin-bottom:8px;">Credit Portfolio review by Product</div>
-        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#64748B;margin-bottom:8px;">35 mins</div>
-        <div style="padding-left:24px;display:flex;flex-direction:column;gap:4px;">
-          <!-- Active product: bold + blue arrow -->
-          <div style="font-family:'Inter',sans-serif;font-size:15px;color:#0F172A;font-weight:700;display:flex;align-items:center;gap:8px;"><span style="color:#236CFF;">&#9654;</span> FNPL</div>
-          <!-- Dimmed products -->
-          <div style="font-family:'Inter',sans-serif;font-size:15px;color:#CBD5E1;">— PCA</div>
-          <div style="font-family:'Inter',sans-serif;font-size:15px;color:#CBD5E1;">— RAD</div>
-          <div style="font-family:'Inter',sans-serif;font-size:15px;color:#CBD5E1;">— TTFA</div>
+      <!-- stop 2 (active — FNPL highlighted) -->
+      <div style="flex:1.4;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;">
+        <div style="width:44px;height:44px;border-radius:50%;background:#236CFF;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 0 0 6px rgba(35,108,255,0.15);">
+          <span style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:#fff;">2</span>
+        </div>
+        <div style="font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:#0F172A;margin-bottom:6px;">Credit Portfolio<br>review by Product</div>
+        <div style="font-family:'Inter',sans-serif;font-size:13px;color:#94A3B8;font-weight:600;background:#F1F5F9;padding:4px 14px;border-radius:20px;margin-bottom:12px;">35 mins</div>
+        <!-- Active product chip is blue; dimmed products have light border -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:#fff;background:#236CFF;padding:5px 14px;border-radius:6px;">&#9654; FNPL</span>
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#CBD5E1;background:#F8FAFC;padding:4px 12px;border-radius:6px;border:1px solid #E2E8F0;">PCA</span>
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#CBD5E1;background:#F8FAFC;padding:4px 12px;border-radius:6px;border:1px solid #E2E8F0;">RAD</span>
+          <span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#CBD5E1;background:#F8FAFC;padding:4px 12px;border-radius:6px;border:1px solid #E2E8F0;">TTFA</span>
         </div>
       </div>
-      <div>
-        <div style="font-family:'Inter',sans-serif;font-size:18px;font-weight:600;color:#CBD5E1;margin-bottom:4px;">Fraud Update</div>
-        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#CBD5E1;">10 mins</div>
+      <!-- stop 3 (dimmed — upcoming) -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;opacity:0.35;">
+        <div style="width:40px;height:40px;border-radius:50%;background:#94A3B8;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+          <span style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:#fff;">3</span>
+        </div>
+        <div style="font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:#94A3B8;margin-bottom:6px;">Fraud Update</div>
+        <div style="font-family:'Inter',sans-serif;font-size:13px;color:#CBD5E1;font-weight:600;background:#F1F5F9;padding:4px 14px;border-radius:20px;margin-top:4px;">10 mins</div>
       </div>
     </div>
   </div>
@@ -363,7 +411,7 @@ This is a **static content slide** placed between Slide 4 (Agenda FNPL highlight
   <div style="background:#F8FAFC;border-bottom:1px solid #E2E8F0;padding:28px 48px 18px;">
     <div style="width:100%;height:4px;background:#0F172A;border-radius:2px;margin-bottom:16px;"></div>
     <h1 style="font-family:'Poppins',sans-serif;font-size:26px;font-weight:700;color:#0F172A;margin:0 0 12px;">Executive Summary of GA 2.0</h1>
-    <p style="font-family:'Inter',sans-serif;font-size:12.5px;color:#475569;line-height:1.6;margin:0;">
+    <p data-editable="ga20-summary" style="font-family:'Inter',sans-serif;font-size:12.5px;color:#475569;line-height:1.6;margin:0;">
       Observed strong applicant quality from GA, however there is opportunity to gather more insights to optimize policy going into FY'27.
       Through Pricing test we are offering as low as 10% for lowest risk segment (500bps lower) and 300 bps across all other risk segments to evaluate price sensitivity.
       Decline swap-in test is another opportunity for us to test credit expansion opportunities, and assess riskier segments where alternate data will help.
@@ -783,7 +831,7 @@ Present the verdict and wait for the user to acknowledge. Once acknowledged, **i
 | `{{MONTHS_JSON}}` | JS array of month labels `['Sep-25','Oct-25',...]` |
 | `{{BARS_JSON}}` | JS array of band objects with `n`, `v[]`, `c` |
 | `{{APPROVAL_JSON}}` | JS array of approval rate values (null for gaps) |
-| `{{KPI_*}}` | Individual KPI values and deltas (see delta color rule below) |
+| `{{KPI_*}}` | Individual KPI values and deltas — **must use the last COMPLETE month** (see KPI prior-month rule below) |
 | `{{TABLE_ROWS}}` | HTML `<tr>` rows for the data table |
 | `{{TABLE_COLGROUP}}` | `<col>` elements for each month column |
 | `{{TABLE_HEADERS}}` | `<th>` elements for month headers |
@@ -792,14 +840,18 @@ Present the verdict and wait for the user to acknowledge. Once acknowledged, **i
 
 **Slide 9 table format — STRICT, do NOT change**:
 
-The table below the chart has exactly **4 rows**. Never show Vantage distribution counts in the table — those are already in the chart. The table rows are:
+The table below the chart has exactly **4 rows** in exactly this order. **Never show Vantage distribution counts in the table** — those are already visualized in the stacked bar chart above. **Never add extra rows** like Super Prime Share or Total columns. The table is a compact summary matrix.
 
-| Row | Metric | Format |
-|-----|--------|--------|
-| 1 | Num of Apps | Comma-separated integer |
-| 2 | Avg Vantage | Integer |
-| 3 | Median Income | `$XXK` |
-| 4 | Approval Rate | `XX.X%` |
+| Row | Metric | Source Column | Format | Example |
+|-----|--------|---------------|--------|---------|
+| 1 | Num of Apps | `num_apps` | Comma-separated integer | `184,045` |
+| 2 | Avg Vantage | `avg_vantage` | Integer | `700` |
+| 3 | Median Income | `median_income` | `$XXK` (thousands) | `$82K` |
+| 4 | Approval Rate | `COALESCE(contingent_approval_rate, overall_approval_rate)` | `XX.X%` | `66.7%` |
+
+**Validation**: If your generated table has more or fewer than 4 rows, or shows vantage band counts, STOP — you are violating this spec.
+
+**KPI prior-month rule — MANDATORY**: The MBR typically runs mid-month, so the current month's data is **incomplete**. KPI cards must show the **last complete month's** values, comparing to the **month before that**. For example, if the MBR deck is labeled "Apr 2026" (run ~Apr 15), the KPIs should show **March** data with deltas **vs February** — NOT April data. The `{{LATEST_MONTH_LABEL}}` placeholder in the KPI header (e.g., "Total Apps (Mar)") should reflect this prior month. The `{{KPI_*_DELTA}}` text should read "vs Feb" (the month before the KPI month). This ensures the audience sees a full month of data, not a partial snapshot.
 
 **KPI delta color rule — NEVER RED**: KPI change indicators must use ONLY two colors:
 - **Green** (class `kd`, `#059669`): positive/improving changes (e.g., apps up, approval rate up, vantage up, income up)
@@ -807,7 +859,7 @@ The table below the chart has exactly **4 rows**. Never show Vantage distributio
 
 **NEVER use red, orange, or any alarming color for KPI deltas.** The MBR is a factual report, not an alert dashboard. All directional changes are informational. If a metric decreases month-over-month, show it in neutral gray — not red.
 
-**Approval rate in chart**: The dotted line must show approval rate values for **every month that had active applications**, including Sep-25 and Oct-25. For months where the **fixed `{{POLICY_GROUPS}}` cohorts** weren't active, use the **overall approval rate** instead. Only set to `null` for Nov-25 and Dec-25 (program paused).
+**Approval rate in chart**: The dotted line must show approval rate values for **every month that had active applications**, including Sep-25 and Oct-25. Query 2 now returns **both** `contingent_approval_rate` (policy-group-filtered) and `overall_approval_rate` (all apps). When building `{{APPROVAL_JSON}}`, use `COALESCE(contingent_approval_rate, overall_approval_rate)` — this ensures months where the policy group cohorts weren't active (Sep-25, Oct-25) still get a valid data point from the unfiltered rate. Only set to `null` for Nov-25 and Dec-25 (program paused). **NEVER leave Sep-25 or Oct-25 as null** — the approval rate line must start from the first month of data.
 
 **Key design rules** (do not change):
 - Canvas: 1280×720 (16:9)
@@ -1055,9 +1107,11 @@ Already dispatched in the same batch as Steps 1A–1C. Query comes from [queries
 
 **Canonical chart behavior (combined HTML — MANDATORY, same idea as Slide 13):** In a **single-file deck**, `body` and outer wrappers differ from standalone `template-slide12.html`. Plotly’s **`responsive: true`** can measure the four `.chart-div` panels at the wrong time, so charts look **uneven or stretched**. The template therefore mirrors Slide 13’s fix:
 
+**`file://` compatibility**: The combined HTML must render correctly when opened as a `file://` URL (not just via localhost/Cursor browser). The viewport scaling CSS (see Presenter CSS) handles small browser windows. Fallback chart dimensions ensure Plotly gets valid sizes even when the slide is initially hidden. Deferred rendering ensures charts are initialized only when the slide becomes visible.
+
 1. After the shared legend HTML is injected, run **`void document.getElementById('slide12').offsetHeight`** so the `#slide12` flex/grid layout commits before any chart draws.
-2. For each panel (`c12_0` … `c12_3`), read **`chartEl.getBoundingClientRect()`** and pass **`width`** and **`height`** into the Plotly **`layout`** (with floors, e.g. `Math.max(200, rect.width)` / `Math.max(160, rect.height)`).
-3. Use **`responsive: false`** in the Plotly config so Plotly does not re-size asynchronously and fight the 2×2 grid.
+2. For each panel (`c12_0` … `c12_3`), read **`chartEl.getBoundingClientRect()`** and pass **`width`** and **`height`** into the Plotly **`layout`**. Use **fallback dimensions** (570×230) when the measured size is ≤ 10px (happens when the slide is hidden or opened via `file://` before navigation): `rect.width > 10 ? rect.width : 570` / `rect.height > 10 ? rect.height : 230`. These fallbacks match the expected grid cell size in a 1280×720 slide with 40px padding and 2×2 grid.
+3. Use **`responsive: true`** in the Plotly config. Charts are rendered via **deferred init** (only when the slide first becomes active/visible), so `getBoundingClientRect()` returns correct dimensions. The presenter's `go()` function calls `initSlide()` → `Plotly.Plots.resize()` on each navigation.
 
 4. **Shared Y-axis range** across all four Vantage panels: `renderSlide12` computes a single **`yAxisTop`** from the max DPD30+ **%** in the filtered data (`Math.max(1, maxPct * 1.15)`) and sets **`yaxis.range: [0, yAxisTop]`** on every chart. That prevents **per-panel autoscale** (inconsistent tick steps, Y not starting at 0%, one panel looking “empty”).
 
@@ -1074,9 +1128,9 @@ After substitution, **prove the embedded Slide 12 script matches the current tem
 | `void document.getElementById('slide12').offsetHeight` | Forces layout before measuring chart divs (same class of fix as Slide 13’s `void row.offsetHeight`) |
 | `getBoundingClientRect` | Per-panel width/height for even Plotly canvases |
 | `yAxisTop` / `range:[0,yAxisTop]` | Shared Y-axis across all four panels (avoids uneven autoscale) |
-| `responsive:false` | Plot config — avoids reflow skewing the 2×2 grid |
+| `responsive:true` | Plot config — works with deferred init (charts only render when slide is visible) |
 
-If **any** marker is missing, **stop** — re-extract Slide 12 from the current `template-slide12.html` and re-inject placeholders. Do **not** deliver combined HTML that uses bare `responsive:true` for Slide 12 in a multi-slide file.
+If **any** marker is missing, **stop** — re-extract Slide 12 from the current `template-slide12.html` and re-inject placeholders.
 
 **Layout — 2×2 chart grid, NO tables**:
 
@@ -1156,7 +1210,7 @@ Already dispatched in the same batch as Steps 1A–1D. Query comes from [queries
 
 **Read [template-slide13.html](template-slide13.html) from this skill directory (Read tool) and replace `{{PLACEHOLDER}}` tokens ONLY. Do NOT rewrite the HTML/CSS/JS.** Do not paste Slide 13 script from an older HTML artifact or from memory. Do NOT add any commentary at this stage.
 
-**Canonical chart behavior (MANDATORY):** **[slide13-chart-spec.md](slide13-chart-spec.md)** — per-term Y-axis range (do not share one scale across terms), **smooth spline** lines with `connectgaps: false`, padded series to full `M0`…`M{MOB_CAP}`, **numeric linear x-axis** with `ticktext` MoB labels and `customdata` hovers, **`responsive: false`** + measured `layout.width`, and **two-phase rendering** (append all term panels → `void row.offsetHeight` → `plotJobs` / per-term `Plotly.newPlot`). The template implements this; **any change to chart logic requires updating the spec and the template together**, not ad hoc edits during a run.
+**Canonical chart behavior (MANDATORY):** **[slide13-chart-spec.md](slide13-chart-spec.md)** — per-term Y-axis range (do not share one scale across terms), **smooth spline** lines with `connectgaps: false`, padded series to full `M0`…`M{MOB_CAP}`, **numeric linear x-axis** with `ticktext` MoB labels and `customdata` hovers, **`responsive: true`** + measured `layout.width` via `getBoundingClientRect()`, **deferred init** (charts rendered only when the slide first becomes visible), and **two-phase rendering** (append all term panels → `void row.offsetHeight` → `plotJobs` / per-term `Plotly.newPlot`). The template implements this; **any change to chart logic requires updating the spec and the template together**, not ad hoc edits during a run.
 
 #### Slide 13 — mandatory verification (before merging into combined HTML)
 
@@ -1168,7 +1222,7 @@ After substitution, **prove the embedded Slide 13 script was not truncated or re
 | `void row.offsetHeight` | Forces layout before measuring chart div width |
 | `padSeriesToMobs` | Full MoB horizon with `null` gaps |
 | `type:'linear'` | X-axis (inside `xaxis:`) — stable MoB ticks vs category thinning |
-| `responsive:false` | Plot config — avoids reflow hiding ticks |
+| `responsive:true` | Plot config — works with deferred init (charts only render when slide is visible) |
 
 If **any** marker is missing, **stop** — re-extract Slide 13 from the current `template-slide13.html` and re-inject placeholders. Do **not** deliver combined HTML without passing this check.
 
@@ -1429,7 +1483,7 @@ The file is a **full-screen slide presenter** containing all slides in this orde
 
 Only one slide is visible at a time. Navigation: left/right arrow buttons, keyboard (Arrow keys, Space, Home/End), touch swipe, and clickable dot indicators at the bottom. Dark navy background (`#0F172A`) with the active slide centered at 1280×720 with an elevated shadow. Smooth fade + translate transitions between slides. The cover slide uses a dark navy internal background; all other slides use white. No screenshots needed — the HTML itself is the deliverable. The `intuit-ecosystem-white.svg` file must be in the same directory as the HTML for the cover logo to render. The Agenda slide's product order is dynamic based on user selection at Step 0 (Question 3). The Exec Summary slide's content is dynamic based on Slack inputs collected at Step 3C. Slide 4 (Agenda FNPL) highlights FNPL as the active section. Slide 5 (GA 2.0) is **only included for April 2026 MBR** — skip it for all other months.
 
-### Interactive deck viewer: slide feel, Add Slide, Export HTML
+### Interactive deck viewer: slide feel, Edit Mode, Add/Delete Slide
 
 Teams may host the combined MBR file with a **browser-based deck shell** (for example GitHub Pages under paths like `team-docs/fnpl-mbr/`, or the user’s personal site **`https://namrataverma-rgb.github.io/fnpl-funnel-dashboard/mbr/`**). That **viewer layer** is separate from the Databricks build in this skill, but agents must treat it as **part of the product** so deliverables stay compatible and colleagues can reproduce the same experience.
 
@@ -1440,34 +1494,77 @@ Teams may host the combined MBR file with a **browser-based deck shell** (for ex
 - **Slide templates** in this skill already assume **1280×720**; the presenter shell only adds **page-level chrome** (nav, dots, transitions). Do **not** remove slide shadows or fixed dimensions when merging CSS unless the user explicitly changes the design system.
 - **Scaling**: On screens smaller than 1360×780, the `.presenter` container scales down proportionally via CSS `transform: scale(…)` so slides remain legible on laptops.
 
+#### Edit Mode & Present Mode (in-place toggle)
+
+The deck supports **two modes** toggled **in-place** (no page reload):
+
+- **Present Mode** (default): Normal slide presentation. A small `✏ Edit Mode` button in the bottom bar allows switching.
+- **Edit Mode**: Activated by clicking the button. Adds a **yellow banner** at the top with two buttons: **💾 Save for Everyone** and **▶ Present Mode**. Also shows a **+ (Add Slide)** FAB and a **🗑 (Delete Slide)** FAB at bottom-right.
+
+**Mode toggle mechanics** (build script variables `EDIT_MODE_CSS` + `EDIT_MODE_JS`):
+
+1. `enterEditMode()` — adds `body.edit-mode` class, shows the edit banner, shows FABs, and sets `contenteditable="true"` + `spellcheck="false"` on all `[data-editable]` elements.
+2. `exitEditMode()` — removes `body.edit-mode` class, hides the banner and FABs, strips `contenteditable` from all editable elements. Preserves all DOM changes (added slides, edited text).
+3. **No page reload** — switching modes toggles CSS classes and attributes only. Dynamically added slides persist across mode switches.
+
+**`data-editable` convention**: Any element that should be user-editable in Edit Mode must carry `data-editable="<unique-key>"`. The build script applies this to Exec Summary cards (`fnpl-summary`, `pca-summary`, etc.) and GA 2.0 summary (`ga20-summary`). New slides added via the modal also get `data-editable` on their heading and body.
+
+#### Save for Everyone (GitHub API commit)
+
+The **💾 Save for Everyone** button commits the current deck HTML to the GitHub Pages repository via the GitHub Contents API:
+
+1. **`getCredentials()`** — prompts for a GitHub Personal Access Token (PAT) if not in `localStorage` (key: `ghPAT`).
+2. **`serializeCleanHTML()`** — **critical**: before serialization, temporarily removes all edit-mode artifacts (banner, toast visibility, `body.edit-mode` class, `contenteditable` attributes, FAB states, modal overlays). Captures `document.documentElement.outerHTML`, then restores edit-mode state. This ensures the saved HTML always loads cleanly in Present Mode.
+3. **GitHub API call** — `GET` current file SHA, then `PUT` with Base64-encoded HTML (`btoa(unescape(encodeURIComponent(html)))`) to `https://api.github.com/repos/namrataverma-rgb/fnpl-funnel-dashboard/contents/mbr/FNPL_MBR_<MonYY>.html`.
+4. A toast notification confirms success or shows errors.
+
 #### Toolbar — Add Slide (“Add New Slide” modal)
 
-- **Add Slide** opens a modal titled **Add New Slide** with **Cancel** and **Create Slide**.
-- The user chooses **one** of **six** templates. New slides must follow **FNPL deck conventions** (Inter/Poppins, 16:9 card, **ID-scoped** CSS and scripts — same discipline as [CSS Scoping Rule](#css-scoping-rule)).
+- **+ FAB** (visible in Edit Mode only) opens a modal titled **Add New Slide** with **Cancel** button.
+- The user chooses **one** of **four** templates. New slides use **full inline styles** matching the MBR slide chrome (rainbow accent bar, header with blue bar + MBR badge, content area, footer) so they render identically to data slides 9–13 without relying on ID-scoped CSS.
+- The new slide is inserted **after** the current slide. `window.__presenter.refresh()` rebuilds the dot indicators and counter; `window.__presenter.go(curIdx + 1)` navigates to the new slide.
 
-**Canonical “Add New Slide” template catalog** (names and subtitles are stable for UX and training):
+**Canonical “Add New Slide” template catalog** (4 templates):
 
-| Template | Subtitle (shown in UI) | Purpose |
-|----------|------------------------|---------|
-| **Key Takeaway** | Callout with icon + styled bullets | Executive callout / highlights |
-| **Comparison** | Side-by-side metrics with deltas | Two-column KPI comparison |
-| **Data Table** | Paste CSV or tab-separated data | Table from pasted delimited data |
-| **Commentary** | Title + free-text content slide | Narrative / bullets |
-| **Risk Flag** | Issue → Impact → Action format | Structured risk escalation |
-| **Bar / Line Chart** | Auto-generates a Plotly chart | Chart slide (Plotly, aligned with Slides 9–13 CDN usage) |
+| Template | Preview | Purpose |
+|----------|---------|---------|
+| **Title Slide** | Dark cover (`#0F172A`) with Intuit branding | Section divider or cover-style slide |
+| **Key Takeaway** | MBR chrome (accent bar, header bar, MBR badge) + editable bullets | Executive callout / highlights |
+| **Section Header** | White canvas, centered rainbow accent bar, large title | Deck section divider |
+| **Blank Slide** | Full MBR chrome (accent bar, header, footer) + empty content area | Free-form editable slide matching data slides 9–13 |
 
-**Relationship to this skill’s build:** Slides produced **by this workflow** (Cover, static slides, **9–13** from SQL + `template*.html`) are **not** created through this modal. The modal is for **additional** slides the team inserts **around** the core pack. When the user asks to “add a **Key Takeaway**” or “match **Add New Slide → Comparison**,” implement that **pattern and subtitle**, not a generic blank slide.
+**Template design rules** — new slide templates use **all inline styles** (not CSS classes) because data slide classes are scoped by `#slideN`. Each template includes:
+- Rainbow gradient accent bar: `linear-gradient(90deg, #1D4E89, #19A0AA, #F0C929, #E07B39, #C44536)`
+- Header section with blue vertical bar (`#1D4E89`), title (`h1`), subtitle, and MBR Report badge
+- Content area with `flex:1`
+- Footer with `Consumer Risk Team · {{MBR_MONTH_LABEL}}`
+- `data-editable` attributes on heading and body elements
 
-#### Toolbar — Export HTML
+**Relationship to this skill’s build:** Slides produced **by this workflow** (Cover, static slides, **9–13** from SQL + `template*.html`) are **not** created through this modal. The modal is for **additional** slides the team inserts **around** the core pack.
 
-- **Export HTML** writes or downloads the **current deck** as a **single static HTML file** for sharing, archiving, or publishing without the live viewer.
-- **Authoritative** metrics and charts for **Slides 9–13** still come from this skill’s monthly build; export captures the **post-edit** state if users added slides or text in the viewer.
+#### Toolbar — Delete Slide
+
+- **🗑 FAB** (visible in Edit Mode only) opens a confirmation modal showing the current slide’s title and position (e.g., `Delete "Key Takeaway" (slide 2 of 14)?`).
+- Prevents deleting the last remaining slide.
+- On confirm: removes the slide element from the DOM, calls `window.__presenter.refresh()` to rebuild dots/counter, navigates to the previous slide (or first if current was first), and shows a “Slide deleted.” toast.
+
+#### Presenter API (`window.__presenter`)
+
+The presenter JavaScript exposes a global API for Edit Mode scripts:
+
+| Method | Description |
+|--------|-------------|
+| `go(idx)` | Navigate to slide at index `idx` (0-based) |
+| `currentIndex()` | Returns the current slide index |
+| `refresh()` | Re-queries all slides from DOM, rebuilds dot indicators, updates counter and nav button states. **Must** be called after adding or removing slides. |
 
 #### Compatibility rules (agents)
 
 1. **Do not** rename or merge [core data slide IDs](#template-registry) (`#slide9` … `#slide13`) or flatten their CSS — the scoping rule applies in the viewer and in exports.
 2. If the repo splits **viewer** (`index.html` / shell) vs **generated** `FNPL_MBR_<MonYY>.html`, **document which file the build overwrites** in the repo README so teammates do not lose Add Slide edits.
-3. Prefer the **same Plotly version** as the data slides when implementing **Bar / Line Chart** ad-hoc slides (see combined HTML `<script src="…plotly…">`).
+3. Prefer the **same Plotly version** as the data slides when implementing chart-based ad-hoc slides (see combined HTML `<script src="…plotly…">`).
+4. **`serializeCleanHTML()`** must always be used before saving to GitHub — never serialize while edit-mode UI artifacts are visible, or the saved file will load in a broken “stuck” state.
+5. New-slide templates must use **inline styles only** (not `.accent`, `.hdr-section`, etc.) because those classes are ID-scoped per slide.
 
 ## Monthly Artifact Preservation
 
@@ -1483,7 +1580,8 @@ Teams may host the combined MBR file with a **browser-based deck shell** (for ex
 ## Additional Resources
 
 - **Combined HTML verifier:** [verify_fnpl_mbr_html.py](verify_fnpl_mbr_html.py) — run on `~/Downloads/FNPL_MBR_<MonYY>.html` before handoff (see [Step 5 — Combined HTML verification](#combined-html-verification-automated)).
-- **Interactive deck viewer** (slide chrome, **Add New Slide** six templates, **Export HTML**): [Step 5 — Interactive deck viewer](#interactive-deck-viewer-slide-feel-add-slide-export-html) (subsection under Combined HTML Output)
+- **Interactive deck viewer** (Edit/Present modes, **Add New Slide** four templates, **Delete Slide**, **Save for Everyone**, Presenter API): [Interactive deck viewer](#interactive-deck-viewer-slide-feel-edit-mode-adddelete-slide) (subsection under Combined HTML Output)
+- **Build script** (canonical): `~/fnpl_mbr_apr26_build.py` — contains `PRESENTER_CSS`, `EDIT_MODE_CSS`, `EDIT_MODE_JS`, `PRESENTER_JS`, slide template JS (`TEMPLATES`), and the assembly logic. This is the **source of truth** for all interactive features.
 - Slide 9 SQL queries: [queries.md](queries.md)
 - Slide 10 SQL queries: [queries-slide10.md](queries-slide10.md)
 - Slide 11 SQL queries: [queries-slide11.md](queries-slide11.md)
