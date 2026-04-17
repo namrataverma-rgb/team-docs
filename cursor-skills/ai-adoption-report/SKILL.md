@@ -52,8 +52,8 @@ Ask the user (only if not already provided):
 - Output folder for the report (default `~/ai-adoption-report/`)
 - Transcript look-back window in days (default `60`)
 - Shared Google Drive folder URL (**default:** the team folder at
-  https://drive.google.com/drive/folders/1tPqQ4NsWNiTFJ182GU81FsJXIaAbulFb —
-  folder ID `1tPqQ4NsWNiTFJ182GU81FsJXIaAbulFb`). Use this folder unless the
+  https://drive.google.com/drive/folders/1ltq7KtGpufp8RNO5cwSewX1QsKGDwHfI —
+  folder ID `1ltq7KtGpufp8RNO5cwSewX1QsKGDwHfI`). Use this folder unless the
   user names a different one.
 
 ### Step 2 — Run the scanner
@@ -125,31 +125,68 @@ proprietary project names — paraphrase.
 
 Write the filled markdown to `~/ai-adoption-report/<user_label>-report.md`.
 
-### Step 4 — Upload to Google Drive
+### Step 4 — Build the shareable digest
 
-Upload both `<user_label>-inventory.json` AND `<user_label>-report.md` to the
-team Drive folder (default ID `1tPqQ4NsWNiTFJ182GU81FsJXIaAbulFb`,
-https://drive.google.com/drive/folders/1tPqQ4NsWNiTFJ182GU81FsJXIaAbulFb) using
-the `user-google-drive-mcp` server.
+**Critical:** `inventory.json` is **private** — it contains full SKILL.md
+bodies, all transcript titles, MCP command-lines, and hook commands. It
+**MUST NOT leave the teammate's machine.**
 
-Preferred file names in Drive:
-- `<user_label>-inventory.json` (raw structured data — needed later by the
-  aggregator)
-- `<user_label>-report.md` (human-readable narrative)
+Before uploading anything, produce a sanitized digest using the same theme
+clusters you wrote into the narrative report (Step 3). Save the clusters to a
+tiny JSON file first:
 
-If the MCP returns an error (e.g. auth expired), do **not** block. Print:
-1. Local paths of both files
-2. The Drive folder URL
-3. A short note: *"Google Drive MCP is currently unavailable — please upload
-   these two files to the team folder manually, or re-authenticate the MCP in
-   Cursor Settings → MCP and re-run this step."*
+```bash
+cat > /tmp/themes.json <<'EOF'
+[
+  {"name": "Theme A", "count": 22, "tool_split": {"cursor": 22}},
+  {"name": "Theme B", "count": 18, "tool_split": {"cursor": 15, "claude-code": 3}}
+]
+EOF
 
-Local markdown is the primary deliverable; Drive upload is a convenience.
+python ~/.cursor/skills/ai-adoption-report/scripts/build_digest.py \
+  --inventory ~/ai-adoption-report/<user_label>-inventory.json \
+  --themes /tmp/themes.json \
+  --out ~/ai-adoption-report/<user_label>-digest.json
+```
 
-### Step 5 — Report back
+The digest contains only:
+- User label, generated_at, tools scanned (no host, no OS)
+- Per-tool counts (skills, MCPs, hook events, sessions)
+- Skill names + description previews (first 200 chars) + dates + `has_scripts`
+  / `has_documented_limitations` / `has_documented_challenges` booleans
+- MCP server **names** (no command, no args)
+- Hook event **names** (no commands)
+- Whether rules are configured (boolean only)
+- Theme cluster names + counts (no transcript titles)
+
+### Step 5 — Upload to Google Drive
+
+Upload **only these two files** to the team Drive folder
+(default ID `1ltq7KtGpufp8RNO5cwSewX1QsKGDwHfI`,
+https://drive.google.com/drive/folders/1ltq7KtGpufp8RNO5cwSewX1QsKGDwHfI) via
+the `user-google-drive-mcp` server:
+
+1. `<user_label>-report.md` (human-readable narrative)
+2. `<user_label>-digest.json` (sanitized structured data, used by the
+   aggregator later)
+
+**Do NOT upload `<user_label>-inventory.json`** under any circumstances. It
+stays on the teammate's local disk.
+
+Note: the current Drive MCP can only create Google Docs/Sheets/Slides — not
+arbitrary file uploads. For the digest JSON, tell the user to drag-drop it
+manually via the Drive web UI. For the report, use `create_document` with
+the markdown content as `content`.
+
+If the MCP returns an error, print local paths + the Drive folder URL and
+ask the user to upload manually. Never block.
+
+### Step 6 — Report back
 
 Print:
-- Local report path
+- Local report path (`<user>-report.md`)
+- Local **private** inventory path (`<user>-inventory.json` — stays local)
+- Local digest path (`<user>-digest.json`)
 - Drive URL (if uploaded)
 - Top-line stats: N skills documented, M transcript sessions analyzed
 
@@ -157,18 +194,19 @@ Print:
 
 ## Aggregate Mode
 
-### Step 1 — Collect per-user inventories
+### Step 1 — Collect per-user digests
 
-The team lead downloads every `<user_label>-inventory.json` file from the team
+The team lead downloads every `<user_label>-digest.json` file from the team
 Drive folder
-(https://drive.google.com/drive/folders/1tPqQ4NsWNiTFJ182GU81FsJXIaAbulFb) into
+(https://drive.google.com/drive/folders/1ltq7KtGpufp8RNO5cwSewX1QsKGDwHfI) into
 a local folder, e.g. `~/ai-adoption-report/team-inputs/`.
 
-You can do this via the `user-google-drive-mcp` server (list the folder by ID
-`1tPqQ4NsWNiTFJ182GU81FsJXIaAbulFb`, then download every `*-inventory.json`
-file) or the user can drag-and-drop them manually.
+The aggregator consumes **digests**, not raw inventories. If a teammate
+accidentally uploaded an `inventory.json` instead, the aggregator still
+accepts it for back-compat — but gently flag that as a privacy concern and
+encourage them to replace it with a digest going forward.
 
-Expected naming: `<user_label>-inventory.json`.
+Expected naming: `<user_label>-digest.json`.
 
 ### Step 2 — Run the aggregator
 
@@ -200,7 +238,7 @@ Write to `~/ai-adoption-report/team-summary.md`.
 
 Upload `team-summary.md` (and optionally `team-summary.json`) to the same team
 Drive folder
-(https://drive.google.com/drive/folders/1tPqQ4NsWNiTFJ182GU81FsJXIaAbulFb) via
+(https://drive.google.com/drive/folders/1ltq7KtGpufp8RNO5cwSewX1QsKGDwHfI) via
 the `user-google-drive-mcp` server. File name: `team-summary-YYYY-MM-DD.md` so
 historical snapshots stack cleanly in the folder.
 
@@ -241,17 +279,23 @@ anywhere Python 3.9+ is installed.
 
 ## Privacy Rules (Hard Constraints)
 
-The scanner is already privacy-safe, but the agent must also follow these when
-writing narratives:
+The scanner is privacy-safe by construction, but the agent must also follow
+these when writing narratives and handling outputs:
 
-1. **Do not quote transcript content verbatim** if it contains project code
+1. **Never upload `<user>-inventory.json` to Drive or any shared surface.** It
+   stays on the teammate's machine. Only the narrative report and the sanitized
+   digest are shareable.
+2. **Do not quote transcript content verbatim** if it contains project code
    names, client names, or dollar figures — paraphrase.
-2. **Do not invent data.** If a skill has no documented limitations or
+3. **Do not invent data.** If a skill has no documented limitations or
    challenges, write "None documented" rather than making something up.
-3. **Do not include secrets** in the final markdown, even if they somehow
+4. **Do not include secrets** in the final markdown, even if they somehow
    survived redaction. Sanity-check the output.
-4. **Do not read additional transcript files** beyond what the scanner surfaces.
+5. **Do not read additional transcript files** beyond what the scanner surfaces.
    The scanner's output is the authoritative transcript data source.
+6. **Do not include SKILL.md bodies, transcript titles, MCP command-lines, or
+   hook commands in the digest.** The `build_digest.py` script enforces this;
+   do not bypass it by hand-writing digests.
 
 ## Anti-Patterns
 
@@ -268,11 +312,20 @@ writing narratives:
 
 | File | Role |
 |---|---|
-| `scripts/scan_environment.py` | Deterministic environment scanner (individual mode) |
-| `scripts/aggregate_inventories.py` | Aggregates per-user JSONs (aggregate mode) |
+| `scripts/scan_environment.py` | Deterministic environment scanner (individual mode) — outputs **private** `inventory.json` |
+| `scripts/build_digest.py` | Produces **shareable** sanitized `digest.json` from inventory + theme clusters |
+| `scripts/aggregate_inventories.py` | Aggregates per-user digests (aggregate mode) — also back-compat with legacy inventories |
 | `templates/individual_report.md` | Per-person markdown template |
 | `templates/team_summary.md` | Team-level markdown template |
 | `examples/individual_sample.md` | Example filled-in individual report |
+
+## Output Files Reference
+
+| File | Location | Shareable? |
+|---|---|---|
+| `<user>-inventory.json` | local `~/ai-adoption-report/` | **No — private, never upload** |
+| `<user>-report.md` | local `~/ai-adoption-report/` | Yes — upload as Google Doc |
+| `<user>-digest.json` | local `~/ai-adoption-report/` | Yes — upload to Drive folder |
 
 ## Troubleshooting
 

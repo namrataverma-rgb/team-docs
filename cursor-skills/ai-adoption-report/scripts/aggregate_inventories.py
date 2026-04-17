@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 """
-Aggregate multiple per-teammate inventory JSON files (schema v1 or v2) from
-scan_environment.py into one team-level JSON summary.
+Aggregate multiple per-teammate digest JSON files into one team-level summary.
+
+Accepts both the modern shareable `<user>-digest.json` format (preferred — no
+sensitive content) and legacy `<user>-inventory.json` files (back-compat; not
+recommended for real team use).
 
 Usage:
-    python aggregate_inventories.py --inputs './reports/*.json' --out team.json
+    python aggregate_inventories.py --inputs './team-inputs/*.json' --out team.json
 
 Emits:
-  - roster: list of (user_label, generated_at, skill counts per tool, etc.)
+  - roster: list of (user_label, generated_at, per-tool counts)
   - tool_adoption: how many teammates use cursor vs claude-code vs both
   - skill_registry: deduped skills with adopters + source tools they appear in
   - unique_skills: skills only one person has
   - common_skills: skills >= 2 adopters
-  - mcp_adoption: MCP server usage across team (per-source)
-  - hook_adoption: hook events in use (per-source)
-  - rules_adoption: users with custom rules/memory
+  - mcp_adoption: MCP server usage across team (per-source, names only)
+  - hook_adoption: hook events in use (per-source, event names only)
+  - rules_adoption: users with custom rules/memory (boolean, no content)
   - transcript_volume: totals and per-user per-tool session counts
-  - theme_samples: sample titles per user (for the agent to cluster)
+  - theme_clusters_merged: cluster-name-based rollup across teammates (no titles)
 """
 
 from __future__ import annotations
@@ -66,31 +69,53 @@ def main() -> int:
     skill_descriptions: dict[tuple[str, str], list[str]] = defaultdict(list)
     skill_last_modified: dict[tuple[str, str], str] = {}
     mcp_adopters: dict[tuple[str, str], list[str]] = defaultdict(list)
-    hook_events: dict[tuple[str, str], list[str]] = defaultdict(list)
+    hook_adopters: dict[tuple[str, str], list[str]] = defaultdict(list)
     rules_adopters: list[str] = []
-    theme_samples: dict[str, list[dict[str, str]]] = {}
+    # Theme clusters: (cluster_name, user) -> count. Merged by name across team.
+    theme_totals: dict[str, int] = defaultdict(int)
+    theme_contributors: dict[str, list[str]] = defaultdict(list)
     per_user_tool_usage: dict[str, dict[str, int]] = {}
     total_sessions_by_source: dict[str, int] = defaultdict(int)
-    tool_membership: dict[str, set[str]] = defaultdict(set)  # tool -> {users}
+    tool_membership: dict[str, set[str]] = defaultdict(set)
 
     for inv in inventories:
         user = inv.get("user_label", "unknown")
+        is_digest = "tool_summary" in inv
 
-        # Detect which tools this teammate actually uses (skills > 0 or sessions > 0)
-        skills_by_source: dict[str, int] = defaultdict(int)
-        for s in inv.get("skills", []):
-            skills_by_source[get_source(s)] += 1
+        # --- Per-source counts ---
+        if is_digest:
+            tool_summary = inv.get("tool_summary", {})
+            skills_by_source: dict[str, int] = {
+                t: v.get("skill_count", 0) for t, v in tool_summary.items()
+            }
+            sessions_by_source: dict[str, int] = {
+                t: v.get("session_count", 0) for t, v in tool_summary.items()
+            }
+            hook_counts_by_source: dict[str, int] = {
+                t: v.get("hook_event_count", 0) for t, v in tool_summary.items()
+            }
+        else:
+            # legacy inventory
+            skills_by_source = defaultdict(int)
+            for s in inv.get("skills", []):
+                skills_by_source[get_source(s)] += 1
+            tt = inv.get("transcript_themes") or {}
+            if isinstance(tt, dict) and "samples" in tt:
+                tt = {"cursor": tt}
+            sessions_by_source = {
+                src: (p or {}).get("total_sessions", 0) for src, p in tt.items()
+            }
+            hooks_blob = inv.get("hooks") or {}
+            hook_counts_by_source = {}
+            if "events" in hooks_blob and isinstance(hooks_blob.get("events"), dict):
+                hook_counts_by_source["cursor"] = len(hooks_blob["events"])
+            else:
+                for src, payload in hooks_blob.items():
+                    if isinstance(payload, dict):
+                        hook_counts_by_source[src] = len((payload.get("events") or {}))
 
-        tt = inv.get("transcript_themes") or {}
-        if isinstance(tt, dict) and "samples" in tt:
-            # legacy v1 layout: cursor-only, flat shape
-            legacy = tt
-            tt = {"cursor": legacy}
-
-        sessions_by_source: dict[str, int] = {}
-        for src, payload in tt.items():
-            sessions_by_source[src] = (payload or {}).get("total_sessions", 0)
-            total_sessions_by_source[src] += sessions_by_source[src]
+        for src, c in sessions_by_source.items():
+            total_sessions_by_source[src] += c
 
         per_user_tool_usage[user] = {
             "cursor_skills": skills_by_source.get("cursor", 0),
@@ -106,68 +131,70 @@ def main() -> int:
         roster.append({
             "user_label": user,
             "generated_at": inv.get("generated_at"),
-            "host": inv.get("host"),
-            "schema_version": inv.get("schema_version", 1),
-            "tools_used": sorted([s for s, v in skills_by_source.items() if v > 0]
-                                 + [s for s in sessions_by_source
-                                    if sessions_by_source[s] > 0
-                                    and s not in skills_by_source]),
+            "source_format": "digest" if is_digest else "legacy_inventory",
+            "tools_used": sorted(
+                {s for s, v in skills_by_source.items() if v > 0}
+                | {s for s, v in sessions_by_source.items() if v > 0}
+            ),
             "skill_count_total": len(inv.get("skills", [])),
             "skill_count_by_tool": dict(skills_by_source),
             "session_count_total": sum(sessions_by_source.values()),
-            "session_count_by_tool": sessions_by_source,
+            "session_count_by_tool": dict(sessions_by_source),
             "mcp_count": len(inv.get("mcp_servers", [])),
-            "has_rules": bool(inv.get("rules")),
-            "hook_event_count": sum(
-                len((v or {}).get("events", {}) or {})
-                for v in (inv.get("hooks") or {}).values()
-                if isinstance(v, dict)
-            ) if isinstance(inv.get("hooks"), dict) and all(
-                isinstance(v, dict) for v in (inv.get("hooks") or {}).values()
-            ) else len((inv.get("hooks") or {}).get("events", {}) or {}),
+            "has_rules": inv.get("has_custom_rules", bool(inv.get("rules"))),
+            "hook_event_count": sum(hook_counts_by_source.values()),
         })
 
+        # --- Skills ---
         for s in inv.get("skills", []):
             src = get_source(s)
             name = s.get("name", "unknown")
             key = (name, src)
             skill_adopters[key].append(user)
-            if s.get("description"):
-                skill_descriptions[key].append(s["description"])
+            desc = s.get("description_preview") or s.get("description") or ""
+            if desc:
+                skill_descriptions[key].append(desc)
             mod = s.get("modified", "")
             if mod and mod > skill_last_modified.get(key, ""):
                 skill_last_modified[key] = mod
 
+        # --- MCP servers ---
         for m in inv.get("mcp_servers", []):
             src = get_source(m)
             mcp_adopters[(m.get("name", "unknown"), src)].append(user)
 
-        if inv.get("rules"):
+        # --- Rules ---
+        if inv.get("has_custom_rules") or inv.get("rules"):
             rules_adopters.append(user)
 
-        hooks = inv.get("hooks") or {}
-        # v2: {"cursor": {"events": {...}}, "claude-code": {...}}
-        # v1: {"events": {...}} (cursor)
-        if "events" in hooks and isinstance(hooks.get("events"), dict):
-            # v1
-            for event_name in hooks["events"]:
-                hook_events[(event_name, "cursor")].append(user)
+        # --- Hooks ---
+        if is_digest:
+            for he in inv.get("hook_events", []) or []:
+                hook_adopters[(he.get("event", "unknown"), he.get("source", "cursor"))].append(user)
         else:
-            for src, payload in hooks.items():
-                if not isinstance(payload, dict):
-                    continue
-                for event_name in (payload.get("events") or {}):
-                    hook_events[(event_name, src)].append(user)
+            hooks_blob = inv.get("hooks") or {}
+            if "events" in hooks_blob and isinstance(hooks_blob.get("events"), dict):
+                for event_name in hooks_blob["events"]:
+                    hook_adopters[(event_name, "cursor")].append(user)
+            else:
+                for src, payload in hooks_blob.items():
+                    if not isinstance(payload, dict):
+                        continue
+                    for event_name in (payload.get("events") or {}):
+                        hook_adopters[(event_name, src)].append(user)
 
-        # Transcript samples
-        samples_flat: list[dict[str, str]] = []
-        for src, payload in tt.items():
-            for sample in (payload or {}).get("samples", []) or []:
-                if "source" not in sample:
-                    sample = {**sample, "source": src}
-                samples_flat.append(sample)
-        samples_flat.sort(key=lambda s: s.get("date", ""), reverse=True)
-        theme_samples[user] = samples_flat[: args.samples_per_user]
+        # --- Theme clusters ---
+        clusters = inv.get("theme_clusters") or []
+        if clusters:
+            for c in clusters:
+                name = c.get("name", "(unnamed)")
+                count = int(c.get("count", 0))
+                theme_totals[name] += count
+                if count > 0:
+                    theme_contributors[name].append(user)
+        else:
+            # legacy: cluster samples weren't provided. Skip — aggregate still works.
+            pass
 
     # Build skill registry
     skill_registry: list[dict[str, Any]] = []
@@ -238,7 +265,7 @@ def main() -> int:
         "hook_adoption": sorted(
             [{"event": k[0], "source": k[1],
               "users": sorted(set(v)), "count": len(set(v))}
-             for k, v in hook_events.items()],
+             for k, v in hook_adopters.items()],
             key=lambda x: -x["count"],
         ),
         "rules_adoption": {
@@ -250,7 +277,12 @@ def main() -> int:
             "total_sessions": sum(total_sessions_by_source.values()),
             "per_user": per_user_tool_usage,
         },
-        "theme_samples": theme_samples,
+        "theme_clusters_merged": sorted(
+            [{"name": name, "total_count": theme_totals[name],
+              "contributors": sorted(set(theme_contributors.get(name, [])))}
+             for name in theme_totals],
+            key=lambda x: -x["total_count"],
+        ),
     }
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
