@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "updated": "2026-04-17",
+  "description": "Canonical sources for the weekly cursor-feature-scout briefing. Add/remove URLs here to change what the skill tracks; do not hardcode sources in the SKILL.md.",
+
+  "cursor": {
+    "changelog": "https://cursor.com/changelog",
+    "docs_updates": "https://docs.cursor.com/en/welcome",
+    "forum": "https://forum.cursor.com/latest"
+  },
+
+  "claude_code": {
+    "changelog": "https://docs.claude.com/en/release-notes/claude-code",
+    "github_releases": "https://github.com/anthropics/claude-code/releases",
+    "anthropic_news": "https://www.anthropic.com/news",
+    "anthropic_engineering": "https://www.anthropic.com/engineering"
+  },
+
+  "intuit_slack": {
+    "channels": [
+      "#codeassist-support",
+      "#ds-agentic-dev-mcp-support",
+      "#gen-ai-curious",
+      "#cursor-users"
+    ],
+    "lookback_days": 7,
+    "search_terms": [
+      "new feature",
+      "released",
+      "shipped",
+      "MCP",
+      "marketplace",
+      "dashboard",
+      "HTML",
+      "edit mode",
+      "compose",
+      "background agent"
+    ]
+  },
+
+  "intuit_ecosystem": {
+    "plugin_marketplace": "watch #codeassist-support for announcements",
+    "finriskai": "watch finriskai-agent-all channel for lending/risk AI skill shipments",
+    "ai_usage_dashboards": "https://github.intuit.com/pages/dev-devsuccess/ai-coding-usage/"
+  },
+
+  "tracked_capabilities": [
+    {
+      "id": "live_html_editing",
+      "name": "Live editing in HTML pages",
+      "keywords": ["live edit", "edit mode", "inline edit", "HTML edit", "content-editable"],
+      "risk_relevance": "MBR presenter-mode decks and interactive risk dashboards can be edited inline during team reviews instead of regenerating from source. Directly useful for fnpl-mbr-slide9 viewer."
+    },
+    {
+      "id": "inline_html_comments",
+      "name": "Inline commenting in HTML",
+      "keywords": ["inline comment", "annotation", "review", "collaborative comments", "doc comments"],
+      "risk_relevance": "Per-slide or per-section feedback on MBR drafts without leaving the artifact; removes the round-trip to Google Docs for comments."
+    },
+    {
+      "id": "html_dashboard_caps",
+      "name": "Dashboard-level HTML capabilities",
+      "keywords": ["dashboard", "interactive dashboard", "data viz", "chart components", "filter", "pivot"],
+      "risk_relevance": "Replaces static screenshots with live filterable views in team-docs. Enables interactive DPD30+ / cohort drill-downs shared via URL instead of screenshots."
+    },
+    {
+      "id": "new_mcps",
+      "name": "New MCPs relevant to risk analytics",
+      "keywords": ["MCP", "Model Context Protocol", "new server", "marketplace", "install"],
+      "risk_relevance": "Expands the surface of data and tools our agents can reach. Priority signals: Databricks, Tableau, Camunda, Atlassian, DDE, GitHub, Glean, Slack MCP updates."
+    },
+    {
+      "id": "cursor_chat_compose",
+      "name": "New Cursor chat / compose features",
+      "keywords": ["chat", "compose", "composer", "background agent", "tabs", "prompt", "inline edit", "rules"],
+      "risk_relevance": "Affects how we structure prompts and multi-turn workflows. Background agents could enable unattended cohort QC / overnight scans."
+    },
+    {
+      "id": "claude_code_modes",
+      "name": "New Claude Code modes",
+      "keywords": ["claude code", "mode", "plan mode", "accept mode", "sub-agent", "hook", "skill"],
+      "risk_relevance": "Determines when we use Claude Code vs Cursor for different task types. Installable skills (npx pattern) affect how we package risk skills."
+    }
+  ]
+}
