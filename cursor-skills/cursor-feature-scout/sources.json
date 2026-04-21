@@ -1,7 +1,7 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "updated": "2026-04-17",
-  "description": "Canonical sources for the weekly cursor-feature-scout briefing. Add/remove URLs here to change what the skill tracks; do not hardcode sources in the SKILL.md.",
+  "description": "Canonical sources for the weekly cursor-feature-scout briefing. Add/remove URLs here to change what the skill tracks; do not hardcode sources in the SKILL.md. Briefings are team-neutral reference material — they describe what changed and what it practically enables, without correlating to any specific teammate's work.",
 
   "cursor": {
     "changelog": "https://cursor.com/changelog",
@@ -12,6 +12,7 @@
   "claude_code": {
     "changelog": "https://docs.claude.com/en/release-notes/claude-code",
     "github_releases": "https://github.com/anthropics/claude-code/releases",
+    "raw_changelog": "https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md",
     "anthropic_news": "https://www.anthropic.com/news",
     "anthropic_engineering": "https://www.anthropic.com/engineering"
   },
@@ -40,7 +41,7 @@
 
   "intuit_ecosystem": {
     "plugin_marketplace": "watch #codeassist-support for announcements",
-    "finriskai": "watch finriskai-agent-all channel for lending/risk AI skill shipments",
+    "finriskai": "watch finriskai-agent-all channel for AI skill shipments",
     "ai_usage_dashboards": "https://github.intuit.com/pages/dev-devsuccess/ai-coding-usage/"
   },
 
@@ -49,37 +50,37 @@
       "id": "live_html_editing",
       "name": "Live editing in HTML pages",
       "keywords": ["live edit", "edit mode", "inline edit", "HTML edit", "content-editable"],
-      "risk_relevance": "MBR presenter-mode decks and interactive risk dashboards can be edited inline during team reviews instead of regenerating from source. Directly useful for fnpl-mbr-slide9 viewer."
+      "what_it_enables": "Editing rendered HTML artifacts directly instead of regenerating from source. Useful for any workflow where the HTML output is the deliverable."
     },
     {
       "id": "inline_html_comments",
       "name": "Inline commenting in HTML",
       "keywords": ["inline comment", "annotation", "review", "collaborative comments", "doc comments"],
-      "risk_relevance": "Per-slide or per-section feedback on MBR drafts without leaving the artifact; removes the round-trip to Google Docs for comments."
+      "what_it_enables": "Per-section feedback on HTML artifacts without leaving the artifact or round-tripping through a separate comments tool."
     },
     {
       "id": "html_dashboard_caps",
       "name": "Dashboard-level HTML capabilities",
-      "keywords": ["dashboard", "interactive dashboard", "data viz", "chart components", "filter", "pivot"],
-      "risk_relevance": "Replaces static screenshots with live filterable views in team-docs. Enables interactive DPD30+ / cohort drill-downs shared via URL instead of screenshots."
+      "keywords": ["dashboard", "interactive dashboard", "data viz", "chart components", "filter", "pivot", "canvas"],
+      "what_it_enables": "Interactive, filterable views shared via URL instead of static screenshots. Replaces hand-rolled HTML+JS with first-party components."
     },
     {
       "id": "new_mcps",
-      "name": "New MCPs relevant to risk analytics",
+      "name": "New MCPs relevant to analytics work",
       "keywords": ["MCP", "Model Context Protocol", "new server", "marketplace", "install"],
-      "risk_relevance": "Expands the surface of data and tools our agents can reach. Priority signals: Databricks, Tableau, Camunda, Atlassian, DDE, GitHub, Glean, Slack MCP updates."
+      "what_it_enables": "Expands the surface of data and tools agents can reach. Priority signals: Databricks, Tableau, Camunda, Atlassian, DDE, GitHub, Glean, Slack MCP updates."
     },
     {
       "id": "cursor_chat_compose",
       "name": "New Cursor chat / compose features",
       "keywords": ["chat", "compose", "composer", "background agent", "tabs", "prompt", "inline edit", "rules"],
-      "risk_relevance": "Affects how we structure prompts and multi-turn workflows. Background agents could enable unattended cohort QC / overnight scans."
+      "what_it_enables": "Changes to how prompts and multi-turn workflows are structured. Background agents enable unattended long-running tasks."
     },
     {
       "id": "claude_code_modes",
       "name": "New Claude Code modes",
       "keywords": ["claude code", "mode", "plan mode", "accept mode", "sub-agent", "hook", "skill"],
-      "risk_relevance": "Determines when we use Claude Code vs Cursor for different task types. Installable skills (npx pattern) affect how we package risk skills."
+      "what_it_enables": "Changes the decision of when to use Claude Code vs Cursor for different task types. Installable skills affect how skills are packaged and distributed."
     }
   ]
 }

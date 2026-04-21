@@ -2,27 +2,27 @@
 name: cursor-feature-scout
 description: >-
   Weekly briefing on what just got unlocked in Cursor, Claude Code, and the
-  Intuit AI ecosystem — with a "here's what it means for risk analytics" gloss.
-  Scans public release notes (Cursor, Claude Code, Anthropic) plus Intuit
-  Slack channels (#codeassist-support, #ds-agentic-dev-mcp-support,
-  #gen-ai-curious, #cursor-users) and produces a standardized weekly markdown
-  briefing. Specifically tracks six capabilities relevant to the LatentView
-  Risk team: live editing in HTML, inline commenting in HTML, dashboard-level
-  HTML, new MCPs, new Cursor chat/compose features, and new Claude Code modes.
-  Use when the user says "run the feature scout", "weekly scout", "what's new
-  in Cursor this week", "what's new in Claude Code", "feature briefing", or
-  "update the cursor-feature-scout briefing".
+  Intuit AI ecosystem. Scans public release notes (Cursor, Claude Code,
+  Anthropic) plus Intuit Slack channels (#codeassist-support,
+  #ds-agentic-dev-mcp-support, #gen-ai-curious, #cursor-users) and produces a
+  standardized, team-neutral markdown briefing. Tracks six capabilities: live
+  editing in HTML, inline commenting in HTML, dashboard-level HTML, new MCPs,
+  new Cursor chat/compose features, and new Claude Code modes. Use when the
+  user says "run the feature scout", "weekly scout", "what's new in Cursor
+  this week", "what's new in Claude Code", "feature briefing", or "update the
+  cursor-feature-scout briefing".
 ---
 
 # Cursor Feature Scout
 
 This skill produces a weekly, team-facing briefing that answers the question
-*"what just got unlocked in our AI tooling, and what does it mean for us?"*
-It is Pillar 2 of the LatentView Risk AI Adoption Strategy.
+*"what just got unlocked in our AI tooling?"*. It is Pillar 2 of the
+LatentView Risk AI Adoption Strategy.
 
 The skill does **not** measure adoption (that's `ai-adoption-report`). It does
 **not** codify best practices (that's the LatentView Risk AI Playbook). It
-only scouts new capabilities and makes them actionable for risk analytics.
+scouts new capabilities and describes them factually so every teammate reads
+the same briefing the same way.
 
 ## Quick Start
 
@@ -115,19 +115,26 @@ for §1–3 of the template. Every finding also goes into §4 under the relevant
 sub-heading. If nothing matched a particular capability this week, that
 sub-heading says "No change this week." — do not invent content.
 
-## Step 5 — Write the risk-analytics gloss
+## Step 5 — Write the practical implication (team-neutral)
 
-For each item, write 1–2 sentences of "what this means for risk analytics."
-Keep it concrete. Good glosses reference specific things the team already does
-(FNPL MBR pipeline, Databricks cohort queries, Camunda decision tracing, DPD30+
-analysis). Bad glosses are abstract ("this enables better workflows").
+For each item, write 1–2 sentences of "what this practically enables." Keep
+it factual and team-agnostic so anyone on the team reads the briefing the
+same way. Do **not** correlate findings to any specific teammate's skills,
+projects, or ongoing work.
 
-**Gloss quality rubric:**
-- ✅ "New Cursor background agents could run our monthly MBR QC unattended overnight — worth piloting on the April rebuild."
-- ❌ "This is a powerful new capability that unlocks many workflows."
+**Style rubric:**
+- ✅ "Replaces hand-rolled HTML+JS dashboards with first-party Cursor components."
+- ✅ "Reduces permission-prompt friction for routine MCP calls."
+- ❌ "Directly overlaps [teammate]'s [specific skill]."
+- ❌ "Pilot this on the [specific monthly workflow]."
+- ❌ "This is a powerful new capability that unlocks many workflows." (too abstract)
 
-If the gloss is "no material relevance for risk analytics right now", say so
-plainly. Do not pad.
+If the practical implication is "no material effect for AI-assisted analytics
+workflows right now", say so plainly. Do not pad.
+
+Recommendations in §5 of the template should be stated generically ("Anyone
+on Cursor CLI should try X", "Teams using MCP-heavy configs should upgrade").
+Never name specific teammates or specific client projects.
 
 ## Step 6 — Fill the template and archive
 
@@ -176,7 +183,9 @@ should see a briefing every week so they know the scout ran.
 - [ ] No dollar figures / internal PR numbers / customer names
 - [ ] No secrets or tokens leaked through changelog quotes
 - [ ] Every external claim has a source URL
-- [ ] Risk-analytics gloss is concrete, not abstract
+- [ ] No correlations to specific teammates' skills or projects
+- [ ] Practical-implication sentences are factual, not opinion dressed as fact
+- [ ] Recommendations are phrased generically ("anyone using X should Y")
 
 ## File Reference
 
@@ -194,6 +203,10 @@ should see a briefing every week so they know the scout ran.
 - Do not hardcode URLs in this SKILL.md — put them in `sources.json`.
 - Do not quote Slack messages verbatim — paraphrase.
 - Do not fabricate a release note if the week was quiet — say "Quiet week."
-- Do not write abstract risk-relevance glosses — be specific or be silent.
+- Do not correlate findings to specific teammates' skills or projects (e.g.
+  "this replaces teammate X's workflow"). Briefings are reference material,
+  not personal task lists.
+- Do not write abstract, hand-wavy implication sentences ("unlocks many
+  workflows") — be factual and specific to the capability itself.
 - Do not upload the briefing as a Google Doc (yet). Keep briefings in the repo
   as markdown for diff-ability; post links to them in Slack.
