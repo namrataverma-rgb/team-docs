@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo Page — team-docs</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 40px 48px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(56,189,248,0.1);
+      border: 1px solid rgba(56,189,248,0.3);
+      border-radius: 999px;
+    }
+    h1 {
+      margin: 16px 0 8px;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+    p { color: var(--muted); line-height: 1.6; margin: 0 0 16px; }
+    .meta {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .meta code {
+      background: rgba(255,255,255,0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text);
+    }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">Test Deploy</span>
+    <h1>Hello from team-docs</h1>
+    <p>This is a small demo page used to verify that pushing pages to the personal repo and (optionally) GitHub Pages works end-to-end.</p>
+    <p>If you can read this in your browser, the publish flow is healthy.</p>
+    <div class="meta">
+      Repo: <code>namrataverma-rgb/team-docs</code><br>
+      File: <code>demo.html</code><br>
+      <a href="index.html">&larr; back to index</a>
+    </div>
+  </div>
+</body>
+</html>
